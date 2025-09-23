@@ -1,7 +1,7 @@
 # SHARPIE Gallery
 ## Shared Human-AI Reinforcement Learning Platform for Interactive Experiments Gallery
 
-This repository presents use-cases for [![SHARPIE](https://github.com/libgoncalv/SHARPIE/blob/main/home/static/home/preview_image_1.png)]. 
+This repository presents use-cases for [SHARPIE](https://github.com/libgoncalv/SHARPIE/). 
 
 ### Usage instructions
 * Install SHARPIE by following the instructions on the main repository
