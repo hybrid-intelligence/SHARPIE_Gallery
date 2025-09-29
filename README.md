@@ -5,24 +5,15 @@ This repository presents use-cases for [SHARPIE](https://github.com/libgoncalv/S
 
 ### Usage instructions
 * Install SHARPIE by following the instructions on the main repository
-* Choose one of the use-cases and start by installing the requirements `pip install -r requirements.txt`
-* Copy the content of the folder `webserver/` to the folder `webserver/experiment/` of the SHARPIE repository
-* Copy the content of the folder `runner/` to the folder `runner/` of the SHARPIE repository
-* Lauch the webserver and the runner as explained on the SHARPIE repository
+* Choose one (or several) of the use-cases and follow the instructions in the README.md file
+* Copy the experiments you selected under the `experiments` folder of the runner
+* Lauch the webserver as explained on the SHARPIE repository and the runner using `cd runner && python manage.py runserver`
 
 ### Content of the use-cases
-Each use-case folder contains configuration files for the interface and logging (webserver) and the backend environment and agent(s) (runner). This includes:
-* Webserver
-    * settings.py
-        * Configuration form
-        * Experiment name
-        * Inputs listened in the browser
-* Runner
-    * settings.py
-        * Input mapping from the captured inputs to the action(s) needed by the environment
-        * Termination condition of the environment
-        * Number of human users per experiment
-    * environment.py
-        * environment instance, this can be any environment as long as it defines reset(), step(action) and render()
-    * agent.py
-        * agent instances list, this can be any function as long as it defines sample(obs)
+Each use-case folder contains configuration files for the backend environment and agent(s). This includes:
+* environment.py
+    * Environment instance, this can be any environment as long as it defines reset(), step(action) and render()
+    * Input mapping from the captured inputs to the action(s) needed by the environment
+    * Termination condition of the environment
+* agent.py
+    * Agent instances list, this can be any class as long as it defines sample(obs)

@@ -1,5 +1,4 @@
-from environment import *
-from agent import *
+from pettingzoo.mpe import simple_tag_v3
 
 from collections.abc import Iterable
 
@@ -26,4 +25,4 @@ def termination_condition(terminated, truncated):
         return all(a == 0 for a in terminated)
     return terminated
 
-user_per_experiment = 2
+environment = simple_tag_v3.parallel_env(num_good=1, num_adversaries=1, max_cycles=200, render_mode="rgb_array")

@@ -1,7 +1,4 @@
-from environment import *
-from agent import *
-
-from collections.abc import Iterable
+import gymnasium as gym
 
 def input_mapping(inputs):
     if len(inputs) == 0:
@@ -20,4 +17,4 @@ def input_mapping(inputs):
 def termination_condition(terminated, truncated):
     return terminated or truncated
 
-user_per_experiment = 1
+environment = gym.make("MountainCar-v0", render_mode="rgb_array")
