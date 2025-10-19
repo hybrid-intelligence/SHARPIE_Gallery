@@ -32,4 +32,5 @@ class Agent:
     
     
 
-agents = [Agent('agent_1'), Agent('agent_2')]
+def create_agents(room_name):
+    return [Agent('agent_1'), Agent('agent_2')]

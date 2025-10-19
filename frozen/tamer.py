@@ -1,19 +1,15 @@
-import datetime as dt
+# This code was taken from https://github.com/benibienz/TAMER/tree/master
+
 import os
 import pickle
-import time
-import uuid
-from itertools import count
 from pathlib import Path
-from sys import stdout
-from csv import DictWriter
 
 import numpy as np
 from sklearn import pipeline, preprocessing
 from sklearn.kernel_approximation import RBFSampler
 from sklearn.linear_model import SGDRegressor
+import gymnasium as gym
 
-MOUNTAINCAR_ACTION_MAP = {0: 'left', 1: 'none', 2: 'right'}
 MODELS_DIR = Path(__file__).parent.joinpath('saved_models')
 LOGS_DIR = Path(__file__).parent.joinpath('logs')
 
@@ -21,11 +17,10 @@ LOGS_DIR = Path(__file__).parent.joinpath('logs')
 class SGDFunctionApproximator:
     """ SGD function approximator with RBF preprocessing. """
     def __init__(self, env):
-        
         # Feature preprocessing: Normalize to zero mean and unit variance
         # We use a few samples from the observation space to do this
         observation_examples = np.array(
-            [[env.observation_space.sample()] for _ in range(10000)], dtype='float64'
+            [[env.observation_space.sample()] for _ in range(100000)], dtype='float64'
         )
         self.scaler = preprocessing.StandardScaler()
         self.scaler.fit(observation_examples)
@@ -34,17 +29,17 @@ class SGDFunctionApproximator:
         # We use RBF kernels with different variances to cover different parts of the space
         self.featurizer = pipeline.FeatureUnion(
             [
-                ('rbf1', RBFSampler(gamma=5.0, n_components=100)),
-                ('rbf2', RBFSampler(gamma=2.0, n_components=100)),
-                ('rbf3', RBFSampler(gamma=1.0, n_components=100)),
-                ('rbf4', RBFSampler(gamma=0.5, n_components=100)),
+                ('rbf1', RBFSampler(gamma=5.0, n_components=100, random_state=1)),
+                ('rbf2', RBFSampler(gamma=2.0, n_components=100, random_state=1)),
+                ('rbf3', RBFSampler(gamma=1.0, n_components=100, random_state=1)),
+                ('rbf4', RBFSampler(gamma=0.5, n_components=100, random_state=1)),
             ]
         )
         self.featurizer.fit(self.scaler.transform(observation_examples))
 
         self.models = []
         for _ in range(env.action_space.n):
-            model = SGDRegressor(alpha=0.1, learning_rate='constant')
+            model = SGDRegressor(alpha=0.1, learning_rate='constant', random_state=1)
             model.partial_fit([self.featurize_state([env.reset()[0]])], [0])
             self.models.append(model)
 
@@ -73,55 +68,34 @@ class Tamer:
     """
     def __init__(
         self,
-        env,
-        num_episodes,
-        discount_factor=1,  # only affects Q-learning
-        epsilon=0, # only affects Q-learning
-        min_eps=0,  # minimum value for epsilon after annealing
-        tame=True,  # set to false for normal Q-learning
-        ts_len=0.2,  # length of timestep for training TAMER
-        output_dir=LOGS_DIR,
         model_file_to_load=None  # filename of pretrained model
     ):
-        self.tame = tame
-        self.ts_len = ts_len
-        self.env = env
-        self.uuid = uuid.uuid4()
-        self.output_dir = output_dir
-
+        self.env = gym.make('FrozenLake-v1', is_slippery=False)
         # init model
         if model_file_to_load is not None and os.path.isfile(MODELS_DIR.joinpath(model_file_to_load+'.p')):
             self.load_model(filename=model_file_to_load)
         else:
-            if tame:
-                self.H = SGDFunctionApproximator(env)  # init H function
-            else:  # optionally run as standard Q Learning
-                self.Q = SGDFunctionApproximator(env)  # init Q function
+            self.H = SGDFunctionApproximator(self.env)  # init H function
 
-        # hyperparameters
-        self.discount_factor = discount_factor
-        self.epsilon = 0.8
-        self.num_episodes = num_episodes
-        self.min_eps = min_eps
-
-        # calculate episodic reduction in epsilon
-        self.epsilon_step = (epsilon - min_eps) / num_episodes
-
-    def act(self, state):
-        """ Epsilon-greedy Policy """
-        if np.random.random() < 1 - self.epsilon:
-            preds = self.H.predict(state) if self.tame else self.Q.predict(state)
-            return np.argmax(preds)
+    def act(self, state, epsilon=0.0):
+        if np.random.random() < 1 - epsilon:
+            return np.argmax(self.predict(state))
         else:
             return np.random.randint(0, self.env.action_space.n)
  
+    def predict(self, state):
+        return self.H.predict([state])
+    
+    def train(self, state, action, td_target):
+        self.H.update([state], action, td_target)
+
     def save_model(self, filename):
         """
         Save H or Q model to models dir
         Args:
             filename: name of pickled file
         """
-        model = self.H if self.tame else self.Q
+        model = self.H
         filename = filename + '.p' if not filename.endswith('.p') else filename
         with open(MODELS_DIR.joinpath(filename), 'wb') as f:
             pickle.dump(model, f)
@@ -134,8 +108,4 @@ class Tamer:
         """
         filename = filename + '.p' if not filename.endswith('.p') else filename
         with open(MODELS_DIR.joinpath(filename), 'rb') as f:
-            model = pickle.load(f)
-        if self.tame:
-            self.H = model
-        else:
-            self.Q = model
+            self.H = pickle.load(f)
