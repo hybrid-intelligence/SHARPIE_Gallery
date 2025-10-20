@@ -60,6 +60,21 @@ class SGDFunctionApproximator:
         featurized = self.featurizer.transform(scaled)
         return featurized[0]
 
+class TabularLearner:
+    """Only works for discrete state-action environments."""
+    def __init__(self, env, learning_rate = 1/3):
+        # used for sampling actions
+        self.h_table = np.zeros((env.observation_space.n, env.action_space.n))
+        self.learning_rate = learning_rate
+
+    def predict(self, state):
+        state = state[0]
+        return self.h_table[state]
+    
+    def update(self, state, action, target):
+        state = state[0]
+        error = self.h_table[state, action] - target
+        self.h_table[state,action] += self.learning_rate * -error
 
 class Tamer:
     """
@@ -75,11 +90,18 @@ class Tamer:
         if model_file_to_load is not None and os.path.isfile(MODELS_DIR.joinpath(model_file_to_load+'.p')):
             self.load_model(filename=model_file_to_load)
         else:
-            self.H = SGDFunctionApproximator(self.env)  # init H function
+            #self.H = SGDFunctionApproximator(self.env)  # init H function
+            self.H = TabularLearner(self.env)
+
+    def argmax_random(self, x):
+        max = x.max()
+        maxes = np.flatnonzero(x == max)
+        return np.random.choice(maxes)
 
     def act(self, state, epsilon=0.0):
         if np.random.random() < 1 - epsilon:
-            return np.argmax(self.predict(state))
+            print(self.predict(state))
+            return self.argmax_random(self.predict(state))
         else:
             return np.random.randint(0, self.env.action_space.n)
  
