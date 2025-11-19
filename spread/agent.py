@@ -16,20 +16,21 @@ class Agent:
             target_entity = third_entity
 
         if(abs(velocity[0]) > 0.1 or abs(velocity[1]) > 0.1):
-            return ['']
+            return 0
         
         if(abs(target_entity[0]) < abs(target_entity[1])):
             if(target_entity[1] > 0 and abs(target_entity[1]) > 0.1):
-                return ['ArrowUp']
+                return 4
             elif(abs(target_entity[1]) > 0.1):
-                return ['ArrowDown']
+                return 3
         else:
             if(target_entity[0] > 0 and abs(target_entity[0]) > 0.1):
-                return ['ArrowRight']
+                return 2
             elif(abs(target_entity[0]) > 0.1):
-                return ['ArrowLeft']
-        return ['']
+                return 1
+        return 0
     
     
 
-agents = [Agent('agent_1'), Agent('agent_2')]
+def create_agents(room_name):
+    return [Agent('agent_1'), Agent('agent_2')]
