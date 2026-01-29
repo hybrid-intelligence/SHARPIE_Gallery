@@ -7,7 +7,8 @@ This repository presents use-cases for [SHARPIE](https://github.com/libgoncalv/S
 * Install SHARPIE by following the instructions on the main repository
 * Choose one (or several) of the use-cases and follow the instructions in the README.md file
 * Copy the experiments you selected under the `experiments` folder of the runner
-* Lauch the webserver as explained on the SHARPIE repository and the runner using `cd runner && python manage.py runserver`
+* Lauch the webserver as explained on the SHARPIE repository and the runner using `cd runner && python manage.py runserver`.
+Relaunch the runner if it was already running.
 
 ### Content of the use-cases
 Each use-case folder contains configuration files for the backend environment and agent(s). This includes:
