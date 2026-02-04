@@ -5,23 +5,10 @@ import numpy as np
 
 import environment
 
+from overcooked_ai_py.agents.agent import RandomAgent
+
 MODELS_DIR = Path(__file__).parent.joinpath('saved_models')
 LOGS_DIR = Path(__file__).parent.joinpath('logs')
-
-
-class SimpleLearner:
-    """Does not actually learn"""
-
-    def __init__(self, env, learning_rate=1 / 3):
-        # used for sampling actions
-        self.actions = env.action_space[0]
-        self.learning_rate = learning_rate
-
-    def predict(self, state):
-        return self.sample()
-
-    def sample(self):
-        return self.actions.sample()
 
 
 class Agent:
@@ -32,15 +19,14 @@ class Agent:
         if (model_file_to_load := MODELS_DIR.joinpath(room_name + '_model.p')).exists():
             self.load_model(filename=model_file_to_load)
         else:
-            # self.H = SGDFunctionApproximator(self.env)  # init H function
-            self.H = SimpleLearner(self.env)
+            self.policy = RandomAgent(self.env)
 
     def sample(self, observation):
-        return self.H.sample()
+        return self.env.action_space.sample()
     
     def predict(self, observation):
         # return self.H.predict([state])
-        return self.H.predict(observation)
+        return self.policy.predict(observation)
 
     @staticmethod
     def argmax_random(x):
