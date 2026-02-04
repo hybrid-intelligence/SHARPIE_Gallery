@@ -1,26 +1,36 @@
 import gymnasium
 import numpy as np
+
 import overcooked_ai_py.mdp.overcooked_env
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv, Overcooked
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
+from overcooked_ai_py.mdp.actions import Action, Direction
+
+
+_input_mapping = dict(
+    ArrowUp=Direction.NORTH,
+    ArrowDown=Direction.SOUTH,
+    ArrowRight=Direction.EAST,
+    ArrowLeft=Direction.WEST,
+    Space=Action.STAY,
+    Enter=Action.INTERACT,
+)
 
 
 def input_mapping(inputs):
     print(f"[kgd-debug|input_mapping|start] {inputs=}")
-    if len(inputs) == 0:
-        raise RuntimeError("No inputs. Is that possible?")
-    
-    for agent, actions in inputs.items():
-        print(f"[kgd-debug|input_mapping]    {inputs=}")
-        if 'ArrowUp' in actions:
-            inputs[agent] = 1
-        elif 'ArrowDown' in actions:
-            inputs[agent] = -1
+
+    actions = {}
+    for agent, keys in inputs.items():
+        if len(keys) == 0:
+            action = Action.STAY
         else:
-            inputs[agent] = 0
+            action = _input_mapping[keys[0]]
+        print(f"[kgd-debug|input_mapping]    {keys=} -> {action=}")
+        actions[agent] = Action.ACTION_TO_INDEX[action]
 
     print(f"[kgd-debug|input_mapping|end] {inputs=}")
-    return inputs['agent']
+    return actions
 
 
 def termination_condition(terminated, truncated):
@@ -36,14 +46,21 @@ OriginalOvercooked = Overcooked
 
 
 class FixedOvercooked(OriginalOvercooked):
-    def __init__(self, *args, **kwargs):
+    metadata = {"render_modes": ["rgb_array"], "render_fps": 4}
+
+    def __init__(self, *args, render_mode=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.observation_space = gymnasium.spaces.Tuple([self.observation_space, self.observation_space])
-        self.action_space = gymnasium.spaces.Tuple([self.action_space, self.action_space])
+        self.render_mode = "rgb_array"
 
     def reset(self, seed: 'int | None' = None, options: 'dict[str, Any] | None' = None):
         obs = super().reset()
         return tuple(o.astype(np.float32) for o in obs["both_agent_obs"]), obs
+
+    def step(self, actions: dict):
+        print(f"[kgd-debug|FixedOvercooked.step] {actions=}")
+        obs, reward, done, info = super().step(actions.values())
+        obs["overcooked_state"] = obs["overcooked_state"].to_dict()
+        return obs, reward, done, False, info
 
 
 overcooked_ai_py.mdp.overcooked_env.Overcooked = FixedOvercooked
@@ -51,8 +68,15 @@ overcooked_ai_py.mdp.overcooked_env.Overcooked = FixedOvercooked
 
 # -------------#---
 
+from gymnasium.envs.registration import register
+
+register(
+    id="Overcooked-v1",
+    entry_point="environment:FixedOvercooked",
+)
+
 
 mdp = OvercookedGridworld.from_layout_name("asymmetric_advantages")
 base_env = OvercookedEnv.from_mdp(mdp, horizon=500)
-environment = gymnasium.make("Overcooked-v0", base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
+environment = gymnasium.make("Overcooked-v1", base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
 # environment = gym.make('FrozenLake-v1', is_slippery=False, render_mode="rgb_array")
