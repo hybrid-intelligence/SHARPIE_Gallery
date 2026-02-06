@@ -139,12 +139,39 @@ def load_agent(save_path, policy_id="ppo", agent_index=0):
 
 if __name__ == '__main__':
     print("Hello")
-    # with open("/home/kgd/work/code/vu/sharpie/overcooked_ai/src/overcooked_demo/server/static/assets/agents/RllibAsymmetricAdvantagesSP/config.pkl", "rb") as f:
-    #     print(pickle.load(f))
-    PPO().load_checkpoint("/home/kgd/work/code/vu/sharpie/overcooked_ai/src/overcooked_demo/server/static/assets/agents/RllibAsymmetricAdvantagesSP/agent/checkpoint-650")
 
     room = "asymmetric_advantages"
     agent_type = "SP"
+
+    folder_name = "".join(token.capitalize() for token in room.split("_"))
+    agent_path = f"Rllib{folder_name}{agent_type}"
+
+    config_path = AGENT_DIR.joinpath(agent_path).joinpath("config.pkl")
+    with open(config_path, "rb") as f:
+        # We use dill (instead of pickle) here because we must deserialize functions
+        config = dill.load(f)
+        print("==========")
+        print("= Config =")
+        print(config)
+        print("==========")
+
+    print("===========")
+    print("= Trainer =")
+    print("(init)")
+    trainer: PPO = gen_trainer_from_params(config)
+    print(trainer)
+    print("===========")
+    trainer.load_checkpoint(AGENT_DIR.joinpath(agent_path).joinpath("checkpoint-650"))
+    print("(loading)")
+
+    print(trainer)
+    print("===========")
+
+    # with open("../overcooked_ai/src/overcooked_demo/server/static/assets/agents/RllibAsymmetricAdvantagesSP/config.pkl", "rb") as f:
+    #     print(pickle.load(f))
+    # PPO().load_checkpoint("../overcooked_ai/src/overcooked_demo/server/static/assets/agents/RllibAsymmetricAdvantagesSP/agent/checkpoint-650")
+    # with open("../overcooked_ai/src/overcooked_demo/server/static/assets/agents/RllibAsymmetricAdvantagesSP/agent/checkpoint-650", "rb") as f:
+    #     print(pickle.load(f))
 
     mdp = OvercookedGridworld.from_layout_name(room)
     base_env = OvercookedEnv.from_mdp(mdp, horizon=500)
@@ -153,8 +180,6 @@ if __name__ == '__main__':
     env = gymnasium.make("Overcooked-v1", base_env=base_env, featurize_fn=base_env.featurize_state_mdp, render_mode="human")
     print(env)
 
-    folder_name = "".join(token.capitalize() for token in room.split("_"))
-    agent_path = f"Rllib{folder_name}{agent_type}"
     agents = [RandomAgent(env.action_space), AgentFromPolicy(get_policy(agent_path))]
 
     obs, info = env.reset()
