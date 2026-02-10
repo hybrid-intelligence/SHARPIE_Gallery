@@ -2,7 +2,7 @@ import gymnasium
 import numpy as np
 
 import overcooked_ai_py.mdp.overcooked_env
-from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv, Overcooked
+from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv, Overcooked as OriginalOvercooked
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 from overcooked_ai_py.mdp.actions import Action, Direction
 
@@ -37,12 +37,9 @@ def termination_condition(terminated, truncated):
     return terminated or truncated
 
 
-# --------------#---
-# -- Fast-Fix --#---
-# --------------#---
-
-
-OriginalOvercooked = Overcooked
+# -------------------#---
+# -- Light wrapper --#---
+# -------------------#---
 
 
 class FixedOvercooked(OriginalOvercooked):
@@ -53,20 +50,21 @@ class FixedOvercooked(OriginalOvercooked):
         self.render_mode = "rgb_array"
 
     def reset(self, seed: 'int | None' = None, options: 'dict[str, Any] | None' = None):
+        # Just to follow gym API
         obs = super().reset()
         return tuple(o.astype(np.float32) for o in obs["both_agent_obs"]), obs
 
-    def step(self, actions: dict):
+    def step(self, actions: dict):  # Convert OvercookedState to dictionary for serialization
         print(f"[kgd-debug|FixedOvercooked.step] {actions=}")
         obs, reward, done, info = super().step(actions.values())
         obs["overcooked_state"] = obs["overcooked_state"].to_dict()
         return obs, reward, done, False, info
 
+    def render(self):  # Convert BGR -> RGB
+        return super().render()[:, :, ::-1]
 
-overcooked_ai_py.mdp.overcooked_env.Overcooked = FixedOvercooked
 
-
-# -------------#---
+# -------------------#---
 
 from gymnasium.envs.registration import register
 
@@ -79,4 +77,3 @@ register(
 mdp = OvercookedGridworld.from_layout_name("asymmetric_advantages")
 base_env = OvercookedEnv.from_mdp(mdp, horizon=500)
 environment = gymnasium.make("Overcooked-v1", base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
-# environment = gym.make('FrozenLake-v1', is_slippery=False, render_mode="rgb_array")
