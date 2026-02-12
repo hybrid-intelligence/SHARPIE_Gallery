@@ -92,7 +92,7 @@ class CV2QTGuard:
 
 
 
-class MazeEnv(Env):
+class EnvironmentWrapper(Env):
     """AMaze wrapper for SHARPIE, based on https://amaze.readthedocs.io/en/latest/_modules/amaze/extensions/sb3/maze_env.html"""
 
     metadata = dict(
@@ -174,8 +174,22 @@ class MazeEnv(Env):
 
         return self._observations(), self.infos()
 
-    def step(self, action):
-        """Stub docstring"""
+    def step(self, action_dict):
+        """
+        Execute one step in the environment.
+
+        Args:
+            action_dict: Dictionary with agent id as keys and action as value
+
+        Returns:
+            observation: New observation (numpy array)
+            reward: Reward for the action (float)
+            terminated: Whether the episode has ended (bool)
+            truncated: Whether the episode was truncated (bool)
+            info: Additional information (dict)
+        """
+        # Convert dict action to discrete action (int) - AMaze is single-agent
+        action = list(action_dict.values())[0]
         vec_action = self.mapper.map_action(action)
 
         reward = self._simulation.step(vec_action)
@@ -252,4 +266,4 @@ def termination_condition(terminated, truncated):
 
 maze = Maze.BuildData.from_string("M16_10x10_U")
 robot = Robot.BuildData.from_string("DD")
-environment = MazeEnv(maze, robot)
+environment = EnvironmentWrapper(maze, robot)
