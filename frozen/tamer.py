@@ -100,7 +100,6 @@ class Tamer:
 
     def act(self, state, epsilon=0.0):
         if np.random.random() < 1 - epsilon:
-            print(self.predict(state))
             return self.argmax_random(self.predict(state))
         else:
             return np.random.randint(0, self.env.action_space.n)
