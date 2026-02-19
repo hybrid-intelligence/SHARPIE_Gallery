@@ -1,6 +1,6 @@
 """
 Had to pip install
-    'tensorflow==2.11' 'ray[rllib,tune]==2.0' dm-tree 'gym<0.24' 'numpy<2' 'opencv-python-headless<4.13' gitpython 'pydantic<2'
+    'tensorflow==2.11' 'ray[rllib,tune]==2.0' dm-tree 'gym<0.24' 'numpy<1.23.5' 'opencv-python-headless<4.13' gitpython 'pydantic<2' dill gymnasium
 
 Failed attempt at reading from existing RllibAsymmetricAdvantagesSP (from overcooked_demo)
 """
@@ -12,16 +12,13 @@ from pathlib import Path
 import dill
 import gymnasium
 import overcooked_demo
-from overcooked_ai_py.agents.agent import AgentPair, RandomAgent, AgentFromPolicy
+from human_aware_rl.rllib.rllib import gen_trainer_from_params
+from overcooked_ai_py.agents.agent import RandomAgent, AgentFromPolicy
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
-from human_aware_rl.rllib.rllib import gen_trainer_from_params
-from ray.rllib.algorithms.ppo import PPO
+from ray.rllib.agents.ppo import PPOTrainer
 
-from environment import FixedOvercooked
-
-
-AGENT_DIR = Path(overcooked_demo.__file__).parent.joinpath(f"server/static/assets/agents/")
+AGENT_DIR = Path(__file__).parent.parent.parent.joinpath(f"overcooked_ai/src/overcooked_demo/server/static/assets/agents/")
 
 
 def get_policy(npc_id, idx=0):
@@ -155,13 +152,30 @@ if __name__ == '__main__':
         print(config)
         print("==========")
 
+    # print("##############")
+    # new_trainer = PPOTrainer(config=config)
+    # # Get untrained weights for all policies.
+    # untrained_weights = new_trainer.get_weights()
+    # print("##############")
+
+    # print("===========")
+    # print("= Trainer =")
+    # print("(init)")
+    # trainer = load_trainer(str(AGENT_DIR.joinpath(agent_path).joinpath("agent")))
+    # print(trainer)
+    # print("===========")
+    # trainer.load_checkpoint(AGENT_DIR.joinpath(agent_path).joinpath("checkpoint-650"))
+    # print("(loading)")
+
     print("===========")
     print("= Trainer =")
     print("(init)")
-    trainer: PPO = gen_trainer_from_params(config)
+    config["training_params"]["num_workers"] = 0
+    config["training_params"]["num_gpus"] = 0
+    trainer: PPOTrainer = gen_trainer_from_params(config)
     print(trainer)
     print("===========")
-    trainer.load_checkpoint(AGENT_DIR.joinpath(agent_path).joinpath("checkpoint-650"))
+    trainer.load_checkpoint(AGENT_DIR.joinpath(agent_path).joinpath("agent/checkpoint-650"))
     print("(loading)")
 
     print(trainer)
