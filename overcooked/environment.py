@@ -1,44 +1,13 @@
-import gymnasium
 import numpy as np
-
-import overcooked_ai_py.mdp.overcooked_env
+from gymnasium.envs.registration import register
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv, Overcooked as OriginalOvercooked
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
-from overcooked_ai_py.mdp.actions import Action, Direction
 
 
-print("\033[H\033[J", end="")
-print("Cleared console")
-
-
-_input_mapping = dict(
-    ArrowUp=Direction.NORTH,
-    ArrowDown=Direction.SOUTH,
-    ArrowRight=Direction.EAST,
-    ArrowLeft=Direction.WEST,
-    Space=Action.STAY,
-    Enter=Action.INTERACT,
-)
-
-
-def input_mapping(inputs):
-    print(f"[kgd-debug|input_mapping|start] {inputs=}")
-
-    actions = {}
-    for agent, keys in inputs.items():
-        if len(keys) == 0:
-            action = Action.STAY
-        else:
-            action = _input_mapping[keys[0]]
-        print(f"[kgd-debug|input_mapping]    {keys=} -> {action=}")
-        actions[agent] = Action.ACTION_TO_INDEX[action]
-
-    print(f"[kgd-debug|input_mapping|end] {inputs=}")
-    return actions
-
-
-def termination_condition(terminated, truncated):
-    return terminated or truncated
+DEBUG = False
+if DEBUG:
+    print("\033[H\033[J", end="")
+    print("Cleared console")
 
 
 # -------------------#---
@@ -46,7 +15,7 @@ def termination_condition(terminated, truncated):
 # -------------------#---
 
 
-class FixedOvercooked(OriginalOvercooked):
+class WrappedOvercooked(OriginalOvercooked):
     metadata = {"render_modes": ["rgb_array"], "render_fps": 4}
 
     def __init__(self, *args, render_mode=None, **kwargs):
@@ -73,15 +42,11 @@ class FixedOvercooked(OriginalOvercooked):
 
 # -------------------#---
 
-from gymnasium.envs.registration import register
-
 register(
     id="Overcooked-v1",
     entry_point="environment:FixedOvercooked",
 )
 
-
 mdp = OvercookedGridworld.from_layout_name("asymmetric_advantages")
 base_env = OvercookedEnv.from_mdp(mdp, horizon=500)
-# environment = gymnasium.make("Overcooked-v1", base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
-environment = FixedOvercooked(base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
+environment = WrappedOvercooked(base_env=base_env, featurize_fn=base_env.featurize_state_mdp)
