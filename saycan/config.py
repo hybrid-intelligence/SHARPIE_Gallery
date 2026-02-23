@@ -95,9 +95,7 @@ def download_assets():
     finally:
         os.chdir(original_dir)
 
-# Call download_assets() only when this script is run directly, not when imported
-if __name__ == "__main__":
-    download_assets()
+download_assets()
 
 # =============================================================================
 # Global Constants

@@ -143,15 +143,66 @@ multiple_templates = [
     'a painting of a {}.',
 ]
 
-# Load CLIP model
-clip_model, clip_preprocess = clip.load("ViT-B/32")
-if torch.cuda.is_available():
-    clip_model.cuda()
-clip_model.eval()
-print("Model parameters:", f"{np.sum([int(np.prod(p.shape)) for p in clip_model.parameters()]):,}")
-print("Input resolution:", clip_model.visual.input_resolution)
-print("Context length:", clip_model.context_length)
-print("Vocab size:", clip_model.vocab_size)
+# Lazy-loaded models (loaded on first use, can be freed)
+_clip_model = None
+_clip_preprocess = None
+_tf_session = None
+
+
+def get_clip_model():
+    """Get or lazily load the CLIP model."""
+    global _clip_model, _clip_preprocess
+    if _clip_model is None:
+        _clip_model, _clip_preprocess = clip.load("ViT-B/32")
+        if torch.cuda.is_available():
+            _clip_model.cuda()
+        _clip_model.eval()
+        print("Model parameters:", f"{np.sum([int(np.prod(p.shape)) for p in _clip_model.parameters()]):,}")
+        print("Input resolution:", _clip_model.visual.input_resolution)
+        print("Context length:", _clip_model.context_length)
+        print("Vocab size:", _clip_model.vocab_size)
+    return _clip_model, _clip_preprocess
+
+
+def get_tf_session():
+    """Get or lazily load the TensorFlow session."""
+    global _tf_session
+    if _tf_session is None:
+        config = tf.ConfigProto(allow_soft_placement=True)
+        if torch.cuda.is_available():
+            gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
+            config = tf.ConfigProto(gpu_options=gpu_options, allow_soft_placement=True)
+        _tf_session = tf.Session(graph=tf.Graph(), config=config)
+        saved_model_dir = os.path.join(SAYCAN_DIR, "image_path_v2")
+        _ = tf.saved_model.loader.load(_tf_session, ["serve"], saved_model_dir)
+    return _tf_session
+
+
+def cleanup_models():
+    """Free model resources. Call this when done with ViLD."""
+    global _clip_model, _clip_preprocess, _tf_session
+
+    if _tf_session is not None:
+        _tf_session.close()
+        _tf_session = None
+
+    if _clip_model is not None:
+        del _clip_model
+        del _clip_preprocess
+        _clip_model = None
+        _clip_preprocess = None
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+
+# Backward compatibility - load on import (can be disabled by setting LAZY_LOAD=true)
+import os as _os
+if _os.environ.get('VILD_LAZY_LOAD', '').lower() != 'true':
+    clip_model, clip_preprocess = get_clip_model()
+    session = get_tf_session()
+else:
+    clip_model, clip_preprocess = None, None
+    session = None
 
 
 def build_text_embedding(categories):
@@ -164,6 +215,8 @@ def build_text_embedding(categories):
     Returns:
         Numpy array of text embeddings
     """
+    clip_model, _ = get_clip_model()
+
     if FLAGS.prompt_engineering:
         templates = multiple_templates
     else:
@@ -192,10 +245,13 @@ def build_text_embedding(categories):
             text_embeddings /= text_embeddings.norm(dim=-1, keepdim=True)
             text_embedding = text_embeddings.mean(dim=0)
             text_embedding /= text_embedding.norm()
-            all_text_embeddings.append(text_embedding)
+            all_text_embeddings.append(text_embedding.cpu())  # Move to CPU immediately
         all_text_embeddings = torch.stack(all_text_embeddings, dim=1)
-        if run_on_gpu:
-            all_text_embeddings = all_text_embeddings.cuda()
+
+    # Clear GPU cache after embedding
+    if run_on_gpu:
+        torch.cuda.empty_cache()
+
     return all_text_embeddings.cpu().numpy().T
 
 
