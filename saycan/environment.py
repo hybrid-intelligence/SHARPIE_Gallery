@@ -24,6 +24,7 @@ Reference:
     Robotic Affordances. arXiv preprint arXiv:2204.01691.
 """
 
+import cv2
 import os
 import sys
 import tempfile
@@ -238,25 +239,11 @@ class EnvironmentWrapper:
         if action == 'done':
             return np.array([]), 0.0, True, False, {"info": "Task completed"}
         elif isinstance(action, str) and action.startswith('task:'):
-            # Set task and plan first action
+            # Execute complete task automatically
             task_text = action[5:].strip()
-            self.set_task(task_text)
-            action_text, task_done = self.plan_next_action()
-            if task_done or action_text == "done":
-                return np.array([]), 0.0, False, False, {"info": "Task completed"}
-            action = action_text
-        elif action == 'plan':
-            # Get next planned action
-            if self._current_task is None:
-                return np.array([]), 0.0, False, False, {"info": "No task set"}
-            # Re-detect objects since they may have moved
-            self._found_objects = None
-            action_text, task_done = self.plan_next_action()
-            if task_done or action_text == "done":
-                return np.array([]), 0.0, False, False, {"info": "Task completed"}
-            action = action_text
-
-        if action and action != "done":
+            results = self.run_task(task_text)
+            return np.array([]), results["total_reward"], False, False, results
+        elif action:
             # Direct text instruction
             obs, reward, _, info = self._step_with_text(action)
             # Get the frames buffer
@@ -298,12 +285,67 @@ class EnvironmentWrapper:
     def render(self):
         """Render the environment."""
         if len(self.cached_video_frames) > 0:
-            return self.cached_video_frames.pop(0)
-        return self.env.get_camera_image()
+            return cv2.cvtColor(self.cached_video_frames.pop(0), cv2.COLOR_BGR2RGB)
+        return cv2.cvtColor(self.env.get_camera_image(), cv2.COLOR_BGR2RGB)
 
     def get_observation(self):
         """Get current observation without stepping."""
         return self.env.get_observation()
+
+    def run_task(self, task_text, max_steps=5):
+        """
+        Execute a complete task from start to finish with automatic planning.
+
+        This method sets the task and automatically executes all planned actions
+        until completion, without requiring manual 'plan' calls between steps.
+
+        Args:
+            task_text: Natural language task description (e.g., "put all blocks in bowls")
+            max_steps: Maximum number of actions to execute (default: 50)
+
+        Returns:
+            results: Dictionary containing:
+                - task: The original task text
+                - completed: Whether the task completed successfully
+                - steps: List of executed steps with actions and rewards
+                - total_reward: Cumulative reward across all steps
+                - termination_reason: Why execution stopped
+        """
+        self.set_task(task_text)
+
+        results = {
+            "task": task_text,
+            "completed": False,
+            "steps": [],
+            "total_reward": 0.0,
+            "termination_reason": None
+        }
+
+        for step in range(max_steps):
+            # Plan next action
+            action_text, task_done = self.plan_next_action()
+
+            # Check for task completion signal from LLM
+            if task_done or action_text == "done":
+                results["completed"] = True
+                results["termination_reason"] = "task_done"
+                break
+
+            # Execute the planned action
+            obs, reward, _, info = self._step_with_text(action_text)
+            results["total_reward"] += reward
+
+            results["steps"].append({
+                "step": step,
+                "action": action_text,
+                "reward": reward,
+                "info": info
+            })
+
+        # Cache final video frames for rendering
+        self.cached_video_frames = self.env.cache_video
+
+        return results
 
 
 # Create the environment instance for SHARPIE runner

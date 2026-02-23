@@ -43,7 +43,7 @@ python manage.py shell -c "from experiment.models import Experiment, Environment
     'environment': Environment.objects.get(name='SayCan'),
     'number_of_episodes': 1,
     'target_fps': 24.0,
-    'wait_for_inputs': True
+    'wait_for_inputs': False
 })"
 ```
 
@@ -65,7 +65,7 @@ python manage.py shell -c "from experiment.models import Agent, Policy; Agent.ob
     'participant': True,
     'keyboard_inputs': {},
     'multiple_keyboard_inputs': False,
-    'inputs_type': 'actions',
+    'inputs_type': 'other',
     'textual_inputs': True
 })"
 ```
