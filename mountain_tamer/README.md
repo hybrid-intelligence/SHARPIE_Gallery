@@ -1,5 +1,5 @@
 # Installation
-Run `pip install gymnasium`
+Run `pip install gymnasium[classic_control]`
 
 # Setting on the webserver
 <!-- Add this environment to the database -->
@@ -15,7 +15,7 @@ python manage.py shell -c "from experiment.models import Experiment, Environment
     'long_description': 'This is a classic experiment by Knox & Stone in which an agent is trained with evaluative feedback.',
     'enabled': True,
     'environment': Environment.objects.get(name='Mountain car TAMER'),
-    'number_of_episodes': 10,
+    'number_of_episodes': 50,
     'target_fps': 6.666,
     'wait_for_inputs': False
 })"
@@ -55,7 +55,11 @@ python manage.py shell -c "from experiment.models import Agent, Policy; Agent.ob
 python manage.py shell -c "from experiment.models import Experiment, Agent; exp = Experiment.objects.get(link='mountain_tamer'); exp.agents.add(Agent.objects.get(role='agent_mct'))"
 ```
 
-<!-- copy the URL for a custom template -->
+<!-- copy the run.HTML for a custom template -->
 ```bash
-cp mountain_tamer/run_tamer.html ../SHARPIE-2/webserver/experiment/templates/experiment/run.html
+cp mountain_tamer/run_tamer.html ../SHARPIE/webserver/experiment/templates/experiment/run.html
+```
+
+```bash
+cp -r mountain_tamer ../SHARPIE/runner/experiments/
 ```
