@@ -4,12 +4,6 @@ from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv, Overcooked as Ori
 from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 
 
-DEBUG = False
-if DEBUG:
-    print("\033[H\033[J", end="")
-    print("Cleared console")
-
-
 # -------------------#---
 # -- Light wrapper --#---
 # -------------------#---
