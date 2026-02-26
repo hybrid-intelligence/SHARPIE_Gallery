@@ -1,0 +1,41 @@
+# Text processing utilities
+ftfy
+regex
+tqdm
+fvcore
+
+# OpenAI CLIP (install from git)
+git+https://github.com/openai/CLIP.git
+
+# Google Drive downloader
+gdown
+
+# Video and image processing
+moviepy
+imageio
+imageio-ffmpeg
+opencv-python
+pillow
+
+# Plotting and display
+matplotlib
+ipython
+
+# Robotics simulation and utilities
+pybullet
+ollama
+easydict
+
+# Deep learning frameworks
+tensorflow
+torch
+torchvision
+
+# JAX with CUDA support
+jax[cuda]
+flax
+optax
+
+# Numerical computing
+numpy
+scipy
