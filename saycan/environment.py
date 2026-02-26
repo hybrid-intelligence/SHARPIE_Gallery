@@ -23,6 +23,14 @@ Reference:
     ... & Zeng, A. (2022). Do As I Can, Not As I Say: Grounding Language in
     Robotic Affordances. arXiv preprint arXiv:2204.01691.
 """
+import os 
+import sys
+
+# Add the saycan directory to path for imports
+SAYCAN_DIR = os.path.dirname(os.path.abspath(__file__))
+if SAYCAN_DIR not in sys.path:
+    sys.path.insert(0, SAYCAN_DIR)
+    
 from base_environment import SayCanBaseEnvironment
 
 class EnvironmentWrapper(SayCanBaseEnvironment):
