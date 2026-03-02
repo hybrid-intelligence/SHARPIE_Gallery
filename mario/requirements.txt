@@ -1,0 +1,4 @@
+websockets
+opencv-python-headless
+gym==0.24.1
+gym-super-mario-bros
