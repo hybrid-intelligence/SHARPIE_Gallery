@@ -31,16 +31,26 @@ python manage.py shell -c "from experiment.models import Experiment, Environment
 })"
 ```
 
+<!-- Add this policy to the database -->
+
+```bash
+python manage.py shell -c "from experiment.models import Policy; Policy.objects.update_or_create(name='MarioExpertPolicy', defaults={
+    'description': '',
+    'filepaths': {'policy': 'mario/policy.py', 'human_expert': 'mario/tamer.py'},
+    'checkpoint_interval': 1
+})"
+```
+
 <!-- Add this agent to the database -->
 ```bash
 python manage.py shell -c "from experiment.models import Agent; Agent.objects.update_or_create(role='agent_1', defaults={
     'name': 'Mario',
     'description': 'Mario Agent to train expert policy',
-    'policy_id': None,
+    'policy': Policy.objects.get(name='MarioExpertPolicy'),
     'participant': True,
     'keyboard_inputs': {'ArrowLeft': 64, 'ArrowRight': 128, 'ArrowUp': 1, 'ArrowDown': 2,'default': 0},
     'multiple_keyboard_inputs': True,
-    'inputs_type': 'actions',
+    'inputs_type': 'other',
     'textual_inputs': False
 })"
 ```
