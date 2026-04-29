@@ -241,12 +241,18 @@ def main():
         return
     
     if args.all:
+        failed = []
         for uc in list_use_cases():
             try:
                 install_use_case(uc, check_only=args.check)
             except Exception as e:
                 print(f"❌ {uc} failed: {e}")
+                failed.append(uc)
                 continue
+        
+        if failed:
+            print(f"\n❌ {len(failed)} use case(s) failed validation")
+            sys.exit(1)
     elif args.use_case:
         install_use_case(args.use_case, check_only=args.check)
     else:
