@@ -1,0 +1,61 @@
+{
+  "use_case": "overcooked",
+  "dependencies": [],
+  "installation_notes": "Requires Python 3.10. Do not use pip install overcooked-ai. Must build from git source: https://github.com/HumanCompatibleAI/overcooked_ai",
+  "environment": {
+    "name": "Overcooked",
+    "description": "Serve as many orders as possible with an AI teammate",
+    "filepaths": {"environment": "experiments/overcooked/environment.py"}
+  },
+  "policy": {
+    "name": "OvercookedRandom",
+    "description": "Random agent for overcooked",
+    "filepaths": {"policy": "experiments/overcooked/policy.py"},
+    "checkpoint_interval": 0
+  },
+  "agents": [
+    {
+      "role": "Agent",
+      "name": "Agent",
+      "description": "Artificial player",
+      "policy": "OvercookedRandom",
+      "participant": false,
+      "keyboard_inputs": {"ArrowUp": 1, "ArrowDown": -1, "default": 0},
+      "keyboard_input_display": {},
+      "multiple_keyboard_inputs": false,
+      "inputs_type": "actions",
+      "textual_inputs": false
+    },
+    {
+      "role": "Human",
+      "name": "Human",
+      "description": "Human player",
+      "policy": null,
+      "participant": true,
+      "keyboard_inputs": {
+        "ArrowUp": 0, "ArrowDown": 1, "ArrowRight": 2,
+        "ArrowLeft": 3, "Enter": 5, "default": 4
+      },
+      "keyboard_input_display": {
+        "ArrowUp": {"symbol": "↑", "label": "Up"},
+        "ArrowDown": {"symbol": "↓", "label": "Down"},
+        "ArrowLeft": {"symbol": "←", "label": "Left"},
+        "ArrowRight": {"symbol": "→", "label": "Right"},
+        "Enter": {"symbol": "↵", "label": "Interact"}
+      },
+      "multiple_keyboard_inputs": false,
+      "inputs_type": "actions",
+      "textual_inputs": false
+    }
+  ],
+  "experiment": {
+    "link": "overcooked",
+    "name": "Overcooked",
+    "short_description": "Human-AI collaborative cooking",
+    "long_description": "Serve as many orders as possible with an AI teammate",
+    "enabled": true,
+    "number_of_episodes": 1,
+    "target_fps": 4.0,
+    "wait_for_inputs": true
+  }
+}

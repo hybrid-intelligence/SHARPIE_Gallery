@@ -1,0 +1,36 @@
+{
+  "use_case": "mountain",
+  "dependencies": ["gymnasium"],
+  "environment": {
+    "name": "Mountain car",
+    "description": "",
+    "filepaths": {"environment": "mountain/environment.py"}
+  },
+  "agents": [
+    {
+      "role": "agent_1",
+      "name": "Car",
+      "description": "Mountain car",
+      "policy": null,
+      "participant": true,
+      "keyboard_inputs": {"ArrowLeft": 0, "ArrowRight": 2, "default": 1},
+      "keyboard_input_display": {
+        "ArrowLeft": {"symbol": "←", "label": "Left"},
+        "ArrowRight": {"symbol": "→", "label": "Right"}
+      },
+      "multiple_keyboard_inputs": false,
+      "inputs_type": "actions",
+      "textual_inputs": false
+    }
+  ],
+  "experiment": {
+    "link": "mountain",
+    "name": "Mountain car",
+    "short_description": "Simple mountain car experiment - Single player",
+    "long_description": "Whatever i put here, it will be given to the participant.\n\n<br>\n<br>\nBla blablabla blabla balablabla",
+    "enabled": true,
+    "number_of_episodes": 1,
+    "target_fps": 24.0,
+    "wait_for_inputs": false
+  }
+}

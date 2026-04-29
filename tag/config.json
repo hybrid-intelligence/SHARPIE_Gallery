@@ -1,0 +1,55 @@
+{
+  "use_case": "tag",
+  "dependencies": ["pettingzoo[mpe]"],
+  "environment": {
+    "name": "Simple tag",
+    "description": "",
+    "filepaths": {"environment": "tag/environment.py"}
+  },
+  "agents": [
+    {
+      "role": "agent_0",
+      "name": "Fleeing agent",
+      "description": "Fleeing agent",
+      "policy": null,
+      "participant": true,
+      "keyboard_inputs": {"ArrowLeft": 1, "ArrowRight": 2, "ArrowDown": 3, "ArrowUp": 4, "default": 0},
+      "keyboard_input_display": {
+        "ArrowLeft": {"symbol": "←", "label": "Left"},
+        "ArrowRight": {"symbol": "→", "label": "Right"},
+        "ArrowDown": {"symbol": "↓", "label": "Down"},
+        "ArrowUp": {"symbol": "↑", "label": "Up"}
+      },
+      "multiple_keyboard_inputs": false,
+      "inputs_type": "actions",
+      "textual_inputs": false
+    },
+    {
+      "role": "adversary_0",
+      "name": "Adversary agent",
+      "description": "",
+      "policy": null,
+      "participant": true,
+      "keyboard_inputs": {"ArrowLeft": 1, "ArrowRight": 2, "ArrowDown": 3, "ArrowUp": 4, "default": 0},
+      "keyboard_input_display": {
+        "ArrowLeft": {"symbol": "←", "label": "Left"},
+        "ArrowRight": {"symbol": "→", "label": "Right"},
+        "ArrowDown": {"symbol": "↓", "label": "Down"},
+        "ArrowUp": {"symbol": "↑", "label": "Up"}
+      },
+      "multiple_keyboard_inputs": false,
+      "inputs_type": "actions",
+      "textual_inputs": false
+    }
+  ],
+  "experiment": {
+    "link": "tag",
+    "name": "Simple tag",
+    "short_description": "Simple tag experiment",
+    "long_description": "Simple tag experiment, this requires 2 simultaneous users. The adversary needs to chase the agent.",
+    "enabled": true,
+    "number_of_episodes": 1,
+    "target_fps": 24.0,
+    "wait_for_inputs": false
+  }
+}
