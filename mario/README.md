@@ -48,12 +48,17 @@ python manage.py shell -c "from experiment.models import Agent; Agent.objects.up
     'description': 'Mario Agent to train expert policy',
     'policy': Policy.objects.get(name='MarioExpertPolicy'),
     'participant': True,
-    'keyboard_inputs': {'ArrowLeft': 64, 'ArrowRight': 128, 'ArrowUp': 1, 'ArrowDown': 2,'default': 0},
+    'keyboard_inputs': {'ArrowLeft': 64, 'ArrowRight': 128, 'ArrowUp': 2, ' ':1, 'default': 0},
     'multiple_keyboard_inputs': True,
     'inputs_type': 'other',
     'textual_inputs': False
 })"
 ```
+
+Due to the non-ASCII symbols, the following parameter must be manually added to the 'Display config for each key' field of this agent through the admin page:
+
+```{"ArrowLeft": {"symbol": "←", "label": "Left"}, "ArrowRight": {"symbol": "→", "label": "Right"}, "ArrowUp": {"symbol": "↑", "label": "Speed"}, " ": {"symbol": "␣", "label": "Jump"}}```
+
 
 <!-- Link agent to experiment -->
 
