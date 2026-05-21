@@ -7,54 +7,107 @@ Usage:
     python install.py --all             # Install all use cases
     python install.py --list            # List available use cases
     python install.py <use_case> --check # Validate without installing
+    python install.py --quiet           # Minimal output (errors only)
+    python install.py --verbose         # Detailed output
 """
 
 import os
 import sys
-import json
 import subprocess
-from pathlib import Path
 import argparse
+import importlib.util
+from pathlib import Path
+
+import yaml
 
 SCRIPT_DIR = Path(__file__).parent
-SHARPIE_DIR = SCRIPT_DIR.parent / 'SHARPIE'
-WEBSERVER_DIR = SHARPIE_DIR / 'webserver'
+
+verbosity_levels = {
+    'quiet': 0,
+    'default': 1,
+    'verbose': 2
+}
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Install SHARPIE Gallery use cases')
+    parser.add_argument('use_case', nargs='?', help='Use case to install')
+    parser.add_argument('--all', action='store_true', help='Install all use cases')
+    parser.add_argument('--list', action='store_true', help='List available use cases')
+    parser.add_argument('--check', action='store_true', help='Validate without installing')
+    parser.add_argument('--sharpie-dir', type=str, default=None,
+                        help='Path to SHARPIE directory (default: ../SHARPIE)')
+    parser.add_argument('--webserver-dir', type=str, default=None,
+                        help='Path to webserver directory (default: <sharpie-dir>/webserver)')
+    parser.add_argument('--quiet', action='store_true', help='Minimal output (errors only)')
+    parser.add_argument('--verbose', action='store_true', help='Detailed output')
+    return parser.parse_args()
+
+
+def get_paths(args):
+    if args.sharpie_dir:
+        sharpie_dir = Path(args.sharpie_dir)
+    else:
+        sharpie_dir = SCRIPT_DIR.parent / 'SHARPIE'
+    
+    if args.webserver_dir:
+        webserver_dir = Path(args.webserver_dir)
+    else:
+        webserver_dir = sharpie_dir / 'webserver'
+    
+    return sharpie_dir, webserver_dir
+
+
+def get_verbosity(args):
+    if args.quiet:
+        return 0
+    if args.verbose:
+        return 2
+    return 1
+
+
+def log(msg, level=1, verbosity=1):
+    if verbosity >= level:
+        print(msg)
+
 
 def load_config(use_case: str) -> dict:
-    """Load config.json for a use case"""
-    config_path = SCRIPT_DIR / use_case / 'config.json'
+    config_path = SCRIPT_DIR / use_case / 'config.yaml'
     if not config_path.exists():
         raise FileNotFoundError(f"Config not found: {config_path}")
     
     with open(config_path) as f:
-        return json.load(f)
+        return yaml.safe_load(f)
+
 
 def list_use_cases():
-    """List all available use cases"""
     use_cases = []
     for item in SCRIPT_DIR.iterdir():
-        if item.is_dir() and (item / 'config.json').exists():
+        if item.is_dir() and (item / 'config.yaml').exists():
             use_cases.append(item.name)
     return sorted(use_cases)
 
-def check_dependencies(config: dict):
-    """Install required dependencies"""
+
+def check_dependencies(config: dict, verbosity=1):
     deps = config.get('dependencies', [])
+    if not deps:
+        log("  No dependencies required", level=2, verbosity=verbosity)
+        return
+    
     for dep in deps:
         try:
             pkg_name = dep.split('[')[0].replace('-', '_')
             __import__(pkg_name)
-            print(f"  ✓ {dep} already installed")
+            log(f"  ✓ {dep} already installed", level=2, verbosity=verbosity)
         except ImportError:
-            print(f"  Installing {dep}...")
+            log(f"  Installing {dep}...", level=1, verbosity=verbosity)
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', dep])
 
-def validate_files(config: dict, check_only=False):
-    """Validate environment.py and policy.py"""
+
+def validate_files(config: dict, check_only=False, verbosity=1):
     use_case = config['use_case']
     use_case_dir = SCRIPT_DIR / use_case
     
-    # Validate environment
     env_config = config['environment']
     env_file = env_config['filepaths']['environment'].split('/')[-1]
     env_path = use_case_dir / env_file
@@ -62,8 +115,6 @@ def validate_files(config: dict, check_only=False):
     if not env_path.exists():
         raise FileNotFoundError(f"Missing environment: {env_path}")
     
-    # Import and validate environment
-    import importlib.util
     spec = importlib.util.spec_from_file_location("environment", env_path)
     env_mod = importlib.util.module_from_spec(spec)
     
@@ -81,20 +132,17 @@ def validate_files(config: dict, check_only=False):
         if not hasattr(env, method):
             raise AttributeError(f"environment must have {method}() method")
     
-    print(f"  ✓ Environment validated: {env_config['name']}")
+    log(f"  ✓ Environment validated: {env_config['name']}", level=1, verbosity=verbosity)
     
-    # Validate policy (if exists)
     if 'policy' in config:
         pol_config = config['policy']
         
-        # Check all required files exist
         for key, filepath in pol_config['filepaths'].items():
             pol_file = filepath.split('/')[-1]
             pol_path = use_case_dir / pol_file
             if not pol_path.exists():
                 raise FileNotFoundError(f"Missing {key}: {pol_path}")
         
-        # Validate main policy file
         pol_file = pol_config['filepaths']['policy'].split('/')[-1]
         pol_path = use_case_dir / pol_file
         
@@ -109,25 +157,22 @@ def validate_files(config: dict, check_only=False):
         if not hasattr(pol_mod, 'policy'):
             raise AttributeError(f"{pol_path} must define 'policy' variable")
         
-        # Validate policy class name
         policy_class = pol_mod.policy.__class__.__name__
         if policy_class != 'Policy':
             raise ValueError(f"Policy class should be named 'Policy', got '{policy_class}'")
         
-        # Validate predict signature
         import inspect
         sig = inspect.signature(pol_mod.policy.predict)
         params = list(sig.parameters.keys())
         if 'observation' not in params:
             raise ValueError("predict() must accept 'observation' parameter")
         
-        print(f"  ✓ Policy validated: {pol_config['name']}")
+        log(f"  ✓ Policy validated: {pol_config['name']}", level=1, verbosity=verbosity)
     
     if check_only:
         return
     
-    # Test basic interface
-    print("  Testing interface...")
+    log("  Testing interface...", level=2, verbosity=verbosity)
     obs, info = env.reset()
     if 'policy' in config:
         action = pol_mod.policy.predict(observation=obs)
@@ -136,26 +181,25 @@ def validate_files(config: dict, check_only=False):
         if len(result) != 5:
             raise ValueError("step() must return 5 values (obs, reward, terminated, truncated, info)")
     
-    print(f"  ✓ Interface test passed")
+    log(f"  ✓ Interface test passed", level=1, verbosity=verbosity)
 
-def setup_database(config: dict):
-    """Setup database entries from config"""
+
+def setup_database(config: dict, webserver_dir: Path, verbosity=1):
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webserver.settings')
-    sys.path.insert(0, str(WEBSERVER_DIR))
+    sys.path.insert(0, str(webserver_dir))
     import django
     django.setup()
     
+    # Django models must be imported after django.setup()
     from experiment.models import Environment, Experiment, Policy, Agent
     
-    # Create Environment
     env_data = config['environment'].copy()
     env, created = Environment.objects.update_or_create(
         name=env_data['name'],
         defaults=env_data
     )
-    print(f"  {'Created' if created else 'Updated'} Environment: {env.name}")
+    log(f"  {'Created' if created else 'Updated'} Environment: {env.name}", level=1, verbosity=verbosity)
     
-    # Create Policy (if exists)
     pol = None
     if 'policy' in config:
         pol_data = config['policy'].copy()
@@ -163,13 +207,11 @@ def setup_database(config: dict):
             name=pol_data['name'],
             defaults=pol_data
         )
-        print(f"  {'Created' if created else 'Updated'} Policy: {pol.name}")
+        log(f"  {'Created' if created else 'Updated'} Policy: {pol.name}", level=1, verbosity=verbosity)
     
-    # Create Agents
     created_agents = []
     for agent_config in config['agents']:
         agent_data = agent_config.copy()
-        # Resolve policy reference
         if agent_data.get('policy'):
             agent_data['policy'] = Policy.objects.get(name=agent_data['policy'])
         else:
@@ -180,9 +222,8 @@ def setup_database(config: dict):
             defaults=agent_data
         )
         created_agents.append(agent)
-        print(f"  {'Created' if created else 'Updated'} Agent: {agent.name} ({agent.role})")
+        log(f"  {'Created' if created else 'Updated'} Agent: {agent.name} ({agent.role})", level=1, verbosity=verbosity)
     
-    # Create Experiment
     exp_data = config['experiment'].copy()
     exp_data['environment'] = env
     exp, created = Experiment.objects.update_or_create(
@@ -190,73 +231,72 @@ def setup_database(config: dict):
         defaults=exp_data
     )
     
-    # Add agents
     for agent in created_agents:
         exp.agents.add(agent)
     
-    print(f"  {'Created' if created else 'Updated'} Experiment: {exp.name} (link: {exp.link})")
+    log(f"  {'Created' if created else 'Updated'} Experiment: {exp.name} (link: {exp.link})", level=1, verbosity=verbosity)
 
-def show_installation_notes(config: dict):
-    """Show special installation notes"""
+
+def show_installation_notes(config: dict, verbosity=1):
     notes = config.get('installation_notes')
     if notes:
-        print("\n📝 Installation Notes:")
-        print(f"   {notes}\n")
+        log("\n📝 Installation Notes:", level=1, verbosity=verbosity)
+        log(f"   {notes}\n", level=1, verbosity=verbosity)
 
-def install_use_case(use_case: str, check_only=False):
-    """Install a single use case"""
-    print(f"\n{'Validating' if check_only else 'Installing'} {use_case}...")
+
+def install_use_case(use_case: str, webserver_dir: Path, check_only=False, verbosity=1):
+    action = 'Validating' if check_only else 'Installing'
+    log(f"\n{action} {use_case}...", level=1, verbosity=verbosity)
     
     config = load_config(use_case)
     
-    show_installation_notes(config)
+    show_installation_notes(config, verbosity)
     
-    print("Step 1/3: Checking dependencies...")
-    check_dependencies(config)
+    log("Step 1/3: Checking dependencies...", level=1, verbosity=verbosity)
+    check_dependencies(config, verbosity)
     
-    print("\nStep 2/3: Validating files...")
-    validate_files(config, check_only=check_only)
+    log("\nStep 2/3: Validating files...", level=1, verbosity=verbosity)
+    validate_files(config, check_only=check_only, verbosity=verbosity)
     
     if check_only:
         return
     
-    print("\nStep 3/3: Setting up database...")
-    setup_database(config)
+    log("\nStep 3/3: Setting up database...", level=1, verbosity=verbosity)
+    setup_database(config, webserver_dir, verbosity)
     
-    print(f"\n✅ {use_case} installed successfully!")
+    log(f"\n✅ {use_case} installed successfully!", level=1, verbosity=verbosity)
+
 
 def main():
-    parser = argparse.ArgumentParser(description='Install SHARPIE Gallery use cases')
-    parser.add_argument('use_case', nargs='?', help='Use case to install')
-    parser.add_argument('--all', action='store_true', help='Install all use cases')
-    parser.add_argument('--list', action='store_true', help='List available use cases')
-    parser.add_argument('--check', action='store_true', help='Validate without installing')
-    
-    args = parser.parse_args()
+    args = parse_args()
+    verbosity = get_verbosity(args)
+    _, webserver_dir = get_paths(args)
     
     if args.list:
-        print("Available use cases:")
+        log("Available use cases:", level=1, verbosity=verbosity)
         for uc in list_use_cases():
-            print(f"  - {uc}")
+            log(f"  - {uc}", level=1, verbosity=verbosity)
         return
     
     if args.all:
         failed = []
         for uc in list_use_cases():
             try:
-                install_use_case(uc, check_only=args.check)
+                install_use_case(uc, webserver_dir, check_only=args.check, verbosity=verbosity)
             except Exception as e:
-                print(f"❌ {uc} failed: {e}")
+                log(f"❌ {uc} failed: {e}", level=0, verbosity=verbosity)
                 failed.append(uc)
                 continue
         
         if failed:
-            print(f"\n❌ {len(failed)} use case(s) failed validation")
+            log(f"\n❌ {len(failed)} use case(s) failed validation", level=0, verbosity=verbosity)
             sys.exit(1)
     elif args.use_case:
-        install_use_case(args.use_case, check_only=args.check)
+        install_use_case(args.use_case, webserver_dir, check_only=args.check, verbosity=verbosity)
     else:
-        parser.print_help()
+        import argparse
+        argparse.ArgumentParser(description='Install SHARPIE Gallery use cases').print_help()
+
 
 if __name__ == '__main__':
     main()

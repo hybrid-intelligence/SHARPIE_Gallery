@@ -26,4 +26,4 @@ This use case has the following agents:
 - **Agent 2** (agent_1): AI inputs (policy: Spread agent)
 - **Agent 3** (agent_2): AI inputs (policy: Spread agent)
 
-See `config.json` for full configuration details.
+See `config.yaml` for full configuration details.

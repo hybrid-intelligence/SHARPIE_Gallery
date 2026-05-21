@@ -1,6 +1,6 @@
 # Frozen lake
 
-Bla blabla blabla
+Navigate a frozen lake grid using keyboard feedback to train a TAMER agent.
 
 ## Installation
 
@@ -22,4 +22,4 @@ This use case has the following agents:
     - ↑ (Good)
     - ↓ (Bad)
 
-See `config.json` for full configuration details.
+See `config.yaml` for full configuration details.

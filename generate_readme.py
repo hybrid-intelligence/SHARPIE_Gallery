@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Generate README.md from config.json for each use case"""
+"""Generate README.md from config.yaml for each use case"""
 
-import json
+import yaml
 from pathlib import Path
 
+
 def generate_readme(config: dict) -> str:
-    """Generate README content from config"""
     uc = config['use_case']
     env = config['environment']
     exp = config['experiment']
@@ -66,19 +66,20 @@ def generate_readme(config: dict) -> str:
     
     lines.extend([
         "",
-        "See `config.json` for full configuration details.",
+        "See `config.yaml` for full configuration details.",
     ])
     
     return '\n'.join(lines)
 
+
 def main():
     script_dir = Path(__file__).parent
-    use_cases = [d for d in script_dir.iterdir() if d.is_dir() and (d / 'config.json').exists()]
+    use_cases = [d for d in script_dir.iterdir() if d.is_dir() and (d / 'config.yaml').exists()]
     
     for uc_dir in use_cases:
-        config_path = uc_dir / 'config.json'
+        config_path = uc_dir / 'config.yaml'
         with open(config_path) as f:
-            config = json.load(f)
+            config = yaml.safe_load(f)
         
         readme_content = generate_readme(config)
         readme_path = uc_dir / 'README.md'
@@ -87,6 +88,7 @@ def main():
             f.write(readme_content)
         
         print(f"Generated {readme_path}")
+
 
 if __name__ == '__main__':
     main()
