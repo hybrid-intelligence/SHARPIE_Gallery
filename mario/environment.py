@@ -12,10 +12,10 @@ class EnvironmentWrapper():
         self.env = EnvCompatibility(gym_super_mario_bros.make('SuperMarioBros-v0'))
         
         self.observation_space = gymnasium.spaces.Box(
-                low = self.env.observation_space.low,
-                high = self.env.observation_space.high,
-                shape = self.env.observation_space.shape,
-                dtype = self.env.observation_space.dtype)
+                low=0,
+                high=255,
+                shape=self.env.observation_space.shape,
+                dtype=np.uint8)
 
         self.action_space = gymnasium.spaces.Discrete(len(SIMPLE_MOVEMENT))
         
