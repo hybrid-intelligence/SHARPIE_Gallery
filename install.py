@@ -108,6 +108,8 @@ def validate_files(config: dict, check_only=False, verbosity=1):
     use_case = config['use_case']
     use_case_dir = SCRIPT_DIR / use_case
     
+    sys.path.insert(0, str(use_case_dir))
+    
     env_config = config['environment']
     env_file = env_config['filepaths']['environment'].split('/')[-1]
     env_path = use_case_dir / env_file

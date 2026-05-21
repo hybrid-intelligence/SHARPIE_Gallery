@@ -1,10 +1,7 @@
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
-
 from gymnasium.wrappers import EnvCompatibility
 import gymnasium
-
-import gym as old_gym
 import numpy as np
 
 class EnvironmentWrapper():
@@ -12,7 +9,7 @@ class EnvironmentWrapper():
 
     def __init__(self):
         """Initialize the environment."""
-        self.env = EnvCompatibility(gym_super_mario_bros.make('SuperMarioBros-v0'), "rgb_array")
+        self.env = EnvCompatibility(gym_super_mario_bros.make('SuperMarioBros-v0'))
         
         self.observation_space = gymnasium.spaces.Box(
                 low = self.env.observation_space.low,

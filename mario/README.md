@@ -1,67 +1,32 @@
-# Installation
-Create a virtual name named `mario_env` with Python 3.8 using the following command:
+# Mario
 
-```bash
-conda create -n "mario_env" python=3.8
-```
-After activation of this environment, install necessary packages:
+Train an expert policy for Super Mario Bros through behavior cloning from human demonstrations
 
-```bash
-pip install -r requirements.txt
-```
+## Installation
 
-# Setting on the webserver
-<!-- Add this environment to the database -->
+From the gallery root:
 ```bash
-python manage.py shell -c "from experiment.models import Environment; Environment.objects.update_or_create(name='Mario', defaults={'description':'Gym Super Mario Bros','filepaths':{'environment':'mario/environment.py'}})"
+python install.py mario
 ```
 
-<!-- Add this experiment to the database -->
-```bash
-python manage.py shell -c "from experiment.models import Experiment, Environment; Experiment.objects.update_or_create(link='mario', defaults={
-    'name': 'Mario',
-    'conda_environment': 'mario_env',
-    'short_description': 'Mario experiment - Single player',
-    'long_description': 'Mario experiment - Single player',
-    'enabled': True,
-    'environment': Environment.objects.get(name='Mario'),
-    'number_of_episodes': 1,
-    'target_fps': 60.0,
-    'wait_for_inputs': False
-})"
-```
+## Dependencies
 
-<!-- Add this policy to the database -->
+- websockets
+- opencv-python-headless
+- gym==0.24.1
+- gym-super-mario-bros
+- stable-baselines3
+- imitation
 
-```bash
-python manage.py shell -c "from experiment.models import Policy; Policy.objects.update_or_create(name='MarioExpertPolicy', defaults={
-    'description': '',
-    'filepaths': {'policy': 'mario/policy.py', 'human_expert': 'mario/tamer.py'},
-    'checkpoint_interval': 1
-})"
-```
+## Configuration
 
-<!-- Add this agent to the database -->
-```bash
-python manage.py shell -c "from experiment.models import Agent; Agent.objects.update_or_create(role='agent_1', defaults={
-    'name': 'Mario',
-    'description': 'Mario Agent to train expert policy',
-    'policy': Policy.objects.get(name='MarioExpertPolicy'),
-    'participant': True,
-    'keyboard_inputs': {'ArrowLeft': 64, 'ArrowRight': 128, 'ArrowUp': 2, ' ':1, 'default': 0},
-    'multiple_keyboard_inputs': True,
-    'inputs_type': 'other',
-    'textual_inputs': False
-})"
-```
+This use case has the following agents:
 
-Due to the non-ASCII symbols, the following parameter must be manually added to the 'Display config for each key' field of this agent through the admin page:
+- **Mario** (agent_1): human inputs (policy: MarioExpertPolicy)
+  - Keyboard controls:
+    - ← (Left)
+    - → (Right)
+    - ↑ (Speed)
+    - ␣ (Jump)
 
-```{"ArrowLeft": {"symbol": "←", "label": "Left"}, "ArrowRight": {"symbol": "→", "label": "Right"}, "ArrowUp": {"symbol": "↑", "label": "Speed"}, " ": {"symbol": "␣", "label": "Jump"}}```
-
-
-<!-- Link agent to experiment -->
-
-```bash
-python manage.py shell -c "from experiment.models import Experiment, Agent; exp = Experiment.objects.get(link='mario'); exp.agents.add(Agent.objects.get(role='agent_1'))"
-```
+See `config.yaml` for full configuration details.
