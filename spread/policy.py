@@ -1,11 +1,11 @@
 class Policy:
     """A simple heuristic policy for the simple_spread environment."""
 
-    def __init__(self, name):
+    def __init__(self, id=""):
         """Initialize the agent with its name."""
-        self.name = name
+        self.id = id
 
-    def predict(self, obs):
+    def predict(self, obs, participant_input=None):
         """
         Predict an action based on the observation.
 
@@ -55,4 +55,4 @@ class Policy:
 
 
 # Create an instance of the agent for use by the runner
-policy = Policy(name="agent")
+policy = Policy(id="agent")

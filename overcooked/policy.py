@@ -7,15 +7,16 @@ import environment
 MODELS_DIR = Path(__file__).parent.joinpath('saved_models')
 
 
-class Agent:
-    def __init__(self):
+class Policy:
+    def __init__(self, id=""):
+        self.id = id
         self.env = environment.environment
 
     def sample(self):
         return self.env.action_space.sample()
     
-    def predict(self, observation):
+    def predict(self, observation, participant_input=None):
         return self.sample()
 
 
-policy = Agent()
+policy = Policy()

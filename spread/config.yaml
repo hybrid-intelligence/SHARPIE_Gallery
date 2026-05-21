@@ -1,0 +1,79 @@
+use_case: spread
+dependencies:
+  - pettingzoo[mpe]
+
+environment:
+  name: Simple spread
+  description: Simple experiment where 3 agents
+  filepaths:
+    environment: spread/environment.py
+
+policy:
+  name: Spread agent
+  description: ""
+  filepaths:
+    policy: spread/policy.py
+  checkpoint_interval: 0
+
+agents:
+  - role: agent_0
+    name: Agent 1
+    description: ""
+    policy: Spread agent
+    participant: true
+    keyboard_inputs:
+      ArrowLeft: 1
+      ArrowRight: 2
+      ArrowDown: 3
+      ArrowUp: 4
+      default: 0
+    keyboard_input_display:
+      ArrowLeft:
+        symbol: "\u2190"
+        label: Left
+      ArrowRight:
+        symbol: "\u2192"
+        label: Right
+      ArrowDown:
+        symbol: "\u2193"
+        label: Down
+      ArrowUp:
+        symbol: "\u2191"
+        label: Up
+    multiple_keyboard_inputs: false
+    inputs_type: actions
+    textual_inputs: false
+
+  - role: agent_1
+    name: Agent 2
+    description: ""
+    policy: Spread agent
+    participant: false
+    keyboard_inputs:
+      default: 0
+    keyboard_input_display: {}
+    multiple_keyboard_inputs: false
+    inputs_type: actions
+    textual_inputs: false
+
+  - role: agent_2
+    name: Agent 3
+    description: ""
+    policy: Spread agent
+    participant: false
+    keyboard_inputs:
+      default: 0
+    keyboard_input_display: {}
+    multiple_keyboard_inputs: false
+    inputs_type: actions
+    textual_inputs: false
+
+experiment:
+  link: spread
+  name: Simple spread
+  short_description: Simple spread experiment
+  long_description: Simple spread experiment. Each agent should cover one target.
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 24.0
+  wait_for_inputs: false
