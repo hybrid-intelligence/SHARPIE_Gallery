@@ -6,6 +6,16 @@ This repository presents use-cases for [SHARPIE](https://github.com/hybrid-intel
 
 ## Quick Start
 
+### Prerequisites
+Activate your Python environment (conda or venv):
+```bash
+# Using conda
+conda activate sharpie
+
+# Or using venv
+source /path/to/venv/bin/activate
+```
+
 ### Install all use cases
 ```bash
 python install.py --all
@@ -13,7 +23,17 @@ python install.py --all
 
 ### Install specific use case
 ```bash
-python install.py amaze
+python install.py amaze                    # Standard output
+python install.py amaze --quiet             # Minimal output (errors only)
+python install.py amaze --verbose           # Detailed output
+```
+
+### Custom installation paths
+Default location is `../SHARPIE` (relative to the gallery directory). Both arguments are optional and can be used independently:
+```bash
+python install.py amaze --sharpie-dir /path/to/SHARPIE           # webserver defaults to <sharpie-dir>/webserver
+python install.py amaze --webserver-dir /path/to/webserver       # sharpie-dir defaults to ../SHARPIE
+python install.py amaze --sharpie-dir /path/to/SHARPIE --webserver-dir /path/to/webserver
 ```
 
 ### List available use cases
@@ -23,8 +43,10 @@ python install.py --list
 
 ### Validate without installing
 ```bash
-python install.py amaze --check
-python install.py --all --check  # Validate all
+python install.py amaze --check            # Standard output
+python install.py amaze --check --quiet    # Minimal output
+python install.py amaze --check --verbose  # Detailed output
+python install.py --all --check            # Validate all
 ```
 
 ## Available Use Cases
