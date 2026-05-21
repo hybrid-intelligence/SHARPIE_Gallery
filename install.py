@@ -105,85 +105,27 @@ def check_dependencies(config: dict, verbosity=1):
 
 
 def validate_files(config: dict, check_only=False, verbosity=1):
+    """Validate use case files in an isolated subprocess."""
     use_case = config['use_case']
-    use_case_dir = SCRIPT_DIR / use_case
     
-    sys.path.insert(0, str(use_case_dir))
+    validate_script = SCRIPT_DIR / 'validate_single.py'
     
-    env_config = config['environment']
-    env_file = env_config['filepaths']['environment'].split('/')[-1]
-    env_path = use_case_dir / env_file
+    result = subprocess.run(
+        [sys.executable, str(validate_script), use_case],
+        capture_output=True,
+        text=True
+    )
     
-    if not env_path.exists():
-        raise FileNotFoundError(f"Missing environment: {env_path}")
+    if result.stdout:
+        for line in result.stdout.rstrip('\n').split('\n'):
+            if '✓' in line:
+                log(line, level=1, verbosity=verbosity)
     
-    spec = importlib.util.spec_from_file_location("environment", env_path)
-    env_mod = importlib.util.module_from_spec(spec)
-    
-    try:
-        spec.loader.exec_module(env_mod)
-    except Exception as e:
-        raise RuntimeError(f"Failed to load {env_path}: {e}")
-    
-    if not hasattr(env_mod, 'environment'):
-        raise AttributeError(f"{env_path} must define 'environment' variable")
-    
-    env = env_mod.environment
-    required_methods = ['reset', 'step', 'render']
-    for method in required_methods:
-        if not hasattr(env, method):
-            raise AttributeError(f"environment must have {method}() method")
-    
-    log(f"  ✓ Environment validated: {env_config['name']}", level=1, verbosity=verbosity)
-    
-    if 'policy' in config:
-        pol_config = config['policy']
-        
-        for key, filepath in pol_config['filepaths'].items():
-            pol_file = filepath.split('/')[-1]
-            pol_path = use_case_dir / pol_file
-            if not pol_path.exists():
-                raise FileNotFoundError(f"Missing {key}: {pol_path}")
-        
-        pol_file = pol_config['filepaths']['policy'].split('/')[-1]
-        pol_path = use_case_dir / pol_file
-        
-        spec = importlib.util.spec_from_file_location("policy", pol_path)
-        pol_mod = importlib.util.module_from_spec(spec)
-        
-        try:
-            spec.loader.exec_module(pol_mod)
-        except Exception as e:
-            raise RuntimeError(f"Failed to load {pol_path}: {e}")
-        
-        if not hasattr(pol_mod, 'policy'):
-            raise AttributeError(f"{pol_path} must define 'policy' variable")
-        
-        policy_class = pol_mod.policy.__class__.__name__
-        if policy_class != 'Policy':
-            raise ValueError(f"Policy class should be named 'Policy', got '{policy_class}'")
-        
-        import inspect
-        sig = inspect.signature(pol_mod.policy.predict)
-        params = list(sig.parameters.keys())
-        if 'observation' not in params:
-            raise ValueError("predict() must accept 'observation' parameter")
-        
-        log(f"  ✓ Policy validated: {pol_config['name']}", level=1, verbosity=verbosity)
-    
-    if check_only:
-        return
-    
-    log("  Testing interface...", level=2, verbosity=verbosity)
-    obs, info = env.reset()
-    if 'policy' in config:
-        action = pol_mod.policy.predict(observation=obs)
-        agent_role = config['agents'][0]['role']
-        result = env.step({agent_role: action})
-        if len(result) != 5:
-            raise ValueError("step() must return 5 values (obs, reward, terminated, truncated, info)")
-    
-    log(f"  ✓ Interface test passed", level=1, verbosity=verbosity)
+    if result.returncode != 0:
+        error_msg = result.stderr.strip().split('\n')[-1] if result.stderr else "Unknown error"
+        if error_msg.startswith('❌ '):
+            error_msg = error_msg[3:]
+        raise RuntimeError(error_msg)
 
 
 def setup_database(config: dict, webserver_dir: Path, verbosity=1):
