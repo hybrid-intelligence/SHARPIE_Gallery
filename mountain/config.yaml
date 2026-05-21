@@ -1,0 +1,41 @@
+use_case: mountain
+dependencies:
+  - gymnasium
+
+environment:
+  name: Mountain car
+  description: ""
+  filepaths:
+    environment: mountain/environment.py
+
+agents:
+  - role: agent_1
+    name: Car
+    description: Mountain car
+    policy: null
+    participant: true
+    keyboard_inputs:
+      ArrowLeft: 0
+      ArrowRight: 2
+      default: 1
+    keyboard_input_display:
+      ArrowLeft:
+        symbol: "\u2190"
+        label: Left
+      ArrowRight:
+        symbol: "\u2192"
+        label: Right
+    multiple_keyboard_inputs: false
+    inputs_type: actions
+    textual_inputs: false
+
+experiment:
+  link: mountain
+  name: Mountain car
+  short_description: Simple mountain car experiment - Single player
+  long_description: |
+    Control a car to climb a mountain using momentum. Use the left and right arrow keys to accelerate the car and build up enough momentum to reach the goal at the top of the hill.
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 24.0
+  wait_for_inputs: false

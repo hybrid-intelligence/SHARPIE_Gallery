@@ -1,10 +1,7 @@
 # Mountain car
 
-Whatever i put here, it will be given to the participant.
+Control a car to climb a mountain using momentum. Use the left and right arrow keys to accelerate the car and build up enough momentum to reach the goal at the top of the hill.
 
-<br>
-<br>
-Bla blablabla blabla balablabla
 
 ## Installation
 
@@ -26,4 +23,4 @@ This use case has the following agents:
     - ← (Left)
     - → (Right)
 
-See `config.json` for full configuration details.
+See `config.yaml` for full configuration details.

@@ -48,21 +48,21 @@ python validate_all.py
 ### Adding a New Use Case
 
 1. Create directory: `my_use_case/`
-2. Add `config.json` (see existing examples for schema)
+2. Add `config.yaml` (see existing examples for schema)
 3. Add `environment.py` (must define `environment` variable)
 4. Add `policy.py` if needed (must define `policy` variable with class named `Policy`)
 5. Validate: `python install.py my_use_case --check`
 6. Install: `python install.py my_use_case`
 
 ### Regenerating READMEs
-READMEs are generated from config.json files:
+READMEs are generated from config.yaml files:
 ```bash
 python generate_readme.py
 ```
 
 ## Configuration Schema
 
-Each use case's `config.json` contains:
+Each use case's `config.yaml` contains:
 - `use_case` - Unique identifier
 - `dependencies` - List of pip packages to install
 - `environment` - Environment configuration (name, description, filepaths)
