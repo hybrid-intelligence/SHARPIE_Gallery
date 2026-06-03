@@ -26,7 +26,17 @@ class WrappedOvercooked(OriginalOvercooked):
         return self.json_obs(obs), obs
 
     def step(self, actions: dict):  # Convert OvercookedState to dictionary for serialization
-        obs, reward, done, info = super().step(actions.values())
+        # Overcooked requires 2 actions (one per agent)
+        # Convert dict values to list/tuple for parent class
+        action_list = list(actions.values())
+        
+        # Ensure we have exactly 2 actions (default to "stay" = 4 if missing)
+        if len(action_list) == 1:
+            action_list = [action_list[0], 4]
+        elif len(action_list) == 0:
+            action_list = [4, 4]
+        
+        obs, reward, done, info = super().step(tuple(action_list))
         obs["overcooked_state"] = obs["overcooked_state"].to_dict()
         return self.json_obs(obs), reward, done, False, info
 

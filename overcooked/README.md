@@ -11,11 +11,11 @@ python install.py overcooked
 
 ### ⚠️ Important
 
-Requires Python 3.10. Do not use pip install overcooked-ai. Must build from git source: https://github.com/HumanCompatibleAI/overcooked_ai
+Requires Python 3.10.
 
 ## Dependencies
 
-No additional dependencies required.
+- git+https://github.com/HumanCompatibleAI/overcooked_ai.git
 
 ## Configuration
 
