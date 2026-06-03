@@ -4,7 +4,7 @@ dependencies:
 
 environment:
   name: Mountain car TAMER
-  description: ""
+  description: "Classic control task: drive a car up a mountain using momentum."
   filepaths:
     environment: mountain_tamer/environment.py
 
@@ -40,7 +40,7 @@ agents:
 experiment:
   link: mountain_tamer
   name: Mountain car TAMER
-  short_description: TAMER mountain care experiment by Knox & Stone
+  short_description: TAMER mountain car experiment by Knox & Stone
   long_description: This is a classic experiment by Knox & Stone in which an agent is trained with evaluative feedback.
   enabled: true
   number_of_episodes: 50

@@ -4,7 +4,7 @@ dependencies:
 
 environment:
   name: Mountain car
-  description: ""
+  description: "Classic control task: drive a car up a mountain using momentum."
   filepaths:
     environment: mountain/environment.py
 

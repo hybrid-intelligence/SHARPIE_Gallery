@@ -4,7 +4,7 @@ dependencies:
 
 environment:
   name: Frozen lake
-  description: ""
+  description: "Navigate across a frozen lake grid while avoiding falling into holes."
   filepaths:
     environment: frozen/environment.py
 
