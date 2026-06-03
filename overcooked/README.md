@@ -11,7 +11,7 @@ python install.py overcooked
 
 ### ⚠️ Important
 
-Requires Python 3.10.
+Requires Python >= 3.10, < 3.11
 
 ## Dependencies
 

@@ -1,7 +1,8 @@
 use_case: overcooked
+python_version: '3.10'
 dependencies:
   - git+https://github.com/HumanCompatibleAI/overcooked_ai.git
-installation_notes: "Requires Python 3.10."
+installation_notes: "Requires Python >= 3.10, < 3.11"
 
 environment:
   name: Overcooked

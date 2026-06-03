@@ -11,7 +11,7 @@ python install.py mario
 
 ### ⚠️ Important
 
-Requires Python >= 3.14.
+Requires Python >= 3.13
 
 ## Dependencies
 

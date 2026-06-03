@@ -3,8 +3,10 @@ name: Validate Use Cases
 on: [push]
 
 jobs:
-  validate:
+  matrix_prep:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       
@@ -12,8 +14,30 @@ jobs:
         with:
           python-version: '3.13'
       
+      - name: Install PyYAML
+        run: pip install pyyaml
+      
+      - id: set-matrix
+        run: |
+          MATRIX=$(python get_python_versions.py)
+          echo "matrix={\"include\":$MATRIX}" >> $GITHUB_OUTPUT
+
+  validate:
+    needs: matrix_prep
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+      fail-fast: false
+    name: Validate ${{ matrix.use_case }} (Python ${{ matrix.python_version }})
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_version }}
+      
       - name: Install dependencies
         run: pip install pyyaml
       
-      - name: Validate all use cases
-        run: python validate_all.py
+      - name: Validate ${{ matrix.use_case }}
+        run: python install.py ${{ matrix.use_case }} --check

@@ -86,7 +86,9 @@ python generate_readme.py
 
 Each use case's `config.yaml` contains:
 - `use_case` - Unique identifier
+- `python_version` - **(Optional)** Required Python version (defaults to '3.13' if not specified)
 - `dependencies` - List of pip packages to install
+- `installation_notes` - **(Optional)** Installation notes (e.g., "Requires Python >= 3.13")
 - `environment` - Environment configuration (name, description, filepaths)
 - `policy` - Optional policy configuration
 - `agents` - List of agent configurations with keyboard_input_display
@@ -94,6 +96,18 @@ Each use case's `config.yaml` contains:
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.10+ (varies by use case)
 - SHARPIE (main repository in adjacent directory)
 - Django 5.2+
+
+## Python Version Compatibility
+
+Different use cases may require different Python versions. The `python_version` field in `config.yaml` specifies the required version for each use case:
+
+| Use Case | Python Version | Reason |
+|----------|---------------|--------|
+| overcooked | 3.10.x only | Dependency: overcooked_ai requires `>=3.10,<3.11` |
+| mario | >= 3.13 | Dependencies: gym-super-mario-bros>=8.0.0, nes-py>=9.0.0 |
+| all others | >= 3.13 (default) | Compatible with Python 3.13+ |
+
+The CI pipeline tests each use case on its required Python version.

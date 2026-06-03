@@ -1,4 +1,5 @@
 use_case: mario
+python_version: '3.13'
 dependencies:
   - websockets
   - opencv-python-headless
@@ -7,7 +8,7 @@ dependencies:
   - nes-py>=9.0.0
   - stable-baselines3
   - imitation
-installation_notes: "Requires Python >= 3.14."
+installation_notes: "Requires Python >= 3.13"
 
 environment:
   name: Mario
