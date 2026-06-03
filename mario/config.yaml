@@ -2,10 +2,12 @@ use_case: mario
 dependencies:
   - websockets
   - opencv-python-headless
-  - gym==0.24.1
-  - gym-super-mario-bros
+  - gymnasium>=1.0.0
+  - gym-super-mario-bros>=8.0.0
+  - nes-py>=9.0.0
   - stable-baselines3
   - imitation
+installation_notes: "Requires Python >= 3.14."
 
 environment:
   name: Mario

@@ -1,7 +1,7 @@
+import gymnasium as gym
 import gym_super_mario_bros
 from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
-from gymnasium.wrappers import EnvCompatibility
-import gymnasium
+from nes_py.wrappers import JoypadSpace
 import numpy as np
 
 class EnvironmentWrapper():
@@ -9,58 +9,66 @@ class EnvironmentWrapper():
 
     def __init__(self):
         """Initialize the environment."""
-        self.env = EnvCompatibility(gym_super_mario_bros.make('SuperMarioBros-v0'))
+        env = gym_super_mario_bros.make('SuperMarioBros-v0', render_mode='rgb_array')
+        self.env = JoypadSpace(env, SIMPLE_MOVEMENT)
         
-        self.observation_space = gymnasium.spaces.Box(
+        self.observation_space = gym.spaces.Box(
                 low=0,
                 high=255,
                 shape=self.env.observation_space.shape,
                 dtype=np.uint8)
 
-        self.action_space = gymnasium.spaces.Discrete(len(SIMPLE_MOVEMENT))
+        self.action_space = gym.spaces.Discrete(len(SIMPLE_MOVEMENT))
         
-        # fields needed to adapt to gymnasium
-        self.env.metadata['render_fps'] = self.env.metadata['video.frames_per_second']
-        self.env.metadata['render_modes'] = self.env.metadata['render.modes'] 
-
-        self.last_transition = ()
-
-        """
-        complete button map of mario environment
-        _button_map = {
-            'right':  0b10000000,
-            'left':   0b01000000,
-            'down':   0b00100000,
-            'up':     0b00010000,
-            'start':  0b00001000,
-            'select': 0b00000100,
-            'B':      0b00000010,       #SPEED
-            'A':      0b00000001,       #JUMP
-            'NOOP':   0b00000000,
+        # Binary keyboard inputs → discrete index mapping
+        self.binary_to_index = {
+            0: 0,      # NOOP
+            1: 5,      # A (jump)
+            2: 0,      # B alone → NOOP (not in SIMPLE_MOVEMENT)
+            64: 6,     # left
+            128: 1,    # right
+            129: 2,    # right + A
+            130: 3,    # right + B
+            131: 4,    # right + A + B
         }
-        """
-
-        # valid actions for SIMPLE_MOVEMENT
-        self.action_meanings = {0: "NOOP",
-                                128: "RIGHT",
-                                129: "RIGHT A",
-                                130: "RIGHT B",
-                                131: "RIGHT A B",
-                                1: "A",
-                                64: "LEFT"
-                               }
+        
+        # Action names for display (index → name)
+        self.action_meanings = {i: name for i, name in enumerate([
+            "NOOP",
+            "RIGHT",
+            "RIGHT A",
+            "RIGHT B",
+            "RIGHT A B",
+            "A",
+            "LEFT"
+        ])}
 
         self.metadata = self.env.metadata
+        self.last_transition = ()
 
     def translate_action(self, given_actions):
-        action = 0b00000000
-        for act in given_actions:
-            action |= act
-
-        if action not in self.action_meanings:     #validity check
-            action = 0  #NOOP if invalid
+        """
+        Convert binary keyboard inputs to discrete action index.
         
-        return action
+        Args:
+            given_actions: list of binary button values
+        
+        Returns:
+            int: discrete action index (0-6)
+        """
+        binary_action = 0
+        for act in given_actions:
+            binary_action |= act
+        
+        if binary_action in self.binary_to_index:
+            return self.binary_to_index[binary_action]
+        
+        # Handle unknown combinations
+        if binary_action & 64:
+            return 6  # left
+        if binary_action & 128:
+            return 1  # right
+        return 0  # NOOP
 
     def reset(self):
         """
@@ -86,13 +94,12 @@ class EnvironmentWrapper():
             truncated: Whether the episode was truncated (bool)
             info: Additional information (dict)
         """
-        # Convert dict action to discrete actions ([int]) - Mario is single-agent / multi inputs
         given_actions = list(action_dict.values())[0]
-        action = self.translate_action(given_actions)
+        action_index = self.translate_action(given_actions)
         
-        next_obs, reward, terminated, truncated, info = self.env.step(action)
+        next_obs, reward, terminated, truncated, info = self.env.step(action_index)
 
-        self.last_transition = (next_obs, reward, terminated or truncated, info)    # save the last transition
+        self.last_transition = (next_obs, reward, terminated or truncated, info)
 
         return next_obs, reward, terminated, truncated, info
 

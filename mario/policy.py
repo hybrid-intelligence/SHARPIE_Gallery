@@ -18,10 +18,9 @@ class Policy:
         return participant_input
 
     def update(self, observation, action, reward, done, next_observation):
-        action = self.env.translate_action(action)
-        next_observation, _, _, info = self.env.last_transition     # overwrite the dummy next_observation with actual one
-        enum_action = list(self.env.action_meanings.keys()).index(action)   # get enumerated action for policy
-        self.human_expert.add_transition(observation, enum_action, next_observation, reward, done, info)
+        action_index = self.env.translate_action(action)
+        next_observation, _, _, info = self.env.last_transition
+        self.human_expert.add_transition(observation, action_index, next_observation, reward, done, info)
 
         if done:
             self.human_expert.train()

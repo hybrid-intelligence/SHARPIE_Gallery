@@ -9,12 +9,17 @@ From the gallery root:
 python install.py mario
 ```
 
+### ⚠️ Important
+
+Requires Python >= 3.14.
+
 ## Dependencies
 
 - websockets
 - opencv-python-headless
-- gym==0.24.1
-- gym-super-mario-bros
+- gymnasium>=1.0.0
+- gym-super-mario-bros>=8.0.0
+- nes-py>=9.0.0
 - stable-baselines3
 - imitation
 
