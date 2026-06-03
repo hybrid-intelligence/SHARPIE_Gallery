@@ -5,26 +5,26 @@ class Policy:
         """Initialize the agent with its name."""
         self.id = id
 
-    def predict(self, obs, participant_input=None):
+    def predict(self, observation, participant_input=None):
         """
         Predict an action based on the observation.
 
         The agent moves towards the nearest landmark (entity) when velocity is low.
 
         Args:
-            obs: Observation for this agent (numpy array)
-                - obs[0:2]: velocity
-                - obs[4:6]: first entity position
-                - obs[6:8]: second entity position
-                - obs[8:10]: third entity position
+            observation: Observation for this agent (numpy array)
+                - observation[0:2]: velocity
+                - observation[4:6]: first entity position
+                - observation[6:8]: second entity position
+                - observation[8:10]: third entity position
 
         Returns:
             action: The action to take (0=NOOP, 1=LEFT, 2=RIGHT, 3=DOWN, 4=UP)
         """
-        velocity = obs[0:2]
-        first_entity = obs[4:6]
-        second_entity = obs[6:8]
-        third_entity = obs[8:10]
+        velocity = observation[0:2]
+        first_entity = observation[4:6]
+        second_entity = observation[6:8]
+        third_entity = observation[8:10]
 
         # Find the nearest landmark
         if abs(first_entity[0]) + abs(first_entity[1]) < abs(second_entity[0]) + abs(second_entity[1]):

@@ -11,7 +11,7 @@ python install.py spread
 
 ## Dependencies
 
-- pettingzoo[mpe]
+- mpe2
 
 ## Configuration
 

@@ -11,7 +11,7 @@ python install.py tag
 
 ## Dependencies
 
-- pettingzoo[mpe]
+- mpe2
 
 ## Configuration
 
