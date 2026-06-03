@@ -12,6 +12,8 @@ python install.py amaze
 ## Dependencies
 
 - amaze-benchmarker[all]
+- gymnasium
+- scikit-learn
 
 ## Configuration
 

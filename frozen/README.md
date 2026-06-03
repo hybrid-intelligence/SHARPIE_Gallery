@@ -12,6 +12,7 @@ python install.py frozen
 ## Dependencies
 
 - gymnasium
+- scikit-learn
 
 ## Configuration
 

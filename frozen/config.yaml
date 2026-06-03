@@ -1,6 +1,7 @@
 use_case: frozen
 dependencies:
   - gymnasium
+  - scikit-learn
 
 environment:
   name: Frozen lake
