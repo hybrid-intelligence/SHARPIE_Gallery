@@ -4,12 +4,19 @@ SMACv2 Environment Wrapper for SHARPIE.
 Provides a clean interface for SMACv2 environments with RGB screen capture.
 """
 
+import os
+import sys
 import time
 import numpy as np
 import cv2
 from typing import Dict, List, Tuple, Any, Optional
 
-from .rgb_capture import (
+# Add the smacv2 directory to path for imports
+SMACV2_DIR = os.path.dirname(os.path.abspath(__file__))
+if SMACV2_DIR not in sys.path:
+    sys.path.insert(0, SMACV2_DIR)
+
+from rgb_capture import (
     RGBStarCraftCapabilityEnvWrapper,
     SMACV2_AVAILABLE,
 )
