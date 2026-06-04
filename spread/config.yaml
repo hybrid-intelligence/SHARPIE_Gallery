@@ -1,10 +1,10 @@
 use_case: spread
 dependencies:
-  - pettingzoo[mpe]
+  - mpe2
 
 environment:
   name: Simple spread
-  description: Simple experiment where 3 agents
+  description: "A coordination task where agents must spread out to cover landmarks."
   filepaths:
     environment: spread/environment.py
 

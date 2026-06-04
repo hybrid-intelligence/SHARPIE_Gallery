@@ -1,18 +1,20 @@
 use_case: overcooked
-dependencies: []
-installation_notes: "Requires Python 3.10. Do not use pip install overcooked-ai. Must build from git source: https://github.com/HumanCompatibleAI/overcooked_ai"
+python_version: '3.10'
+dependencies:
+  - git+https://github.com/HumanCompatibleAI/overcooked_ai.git
+installation_notes: "Requires Python >= 3.10, < 3.11"
 
 environment:
   name: Overcooked
   description: Serve as many orders as possible with an AI teammate
   filepaths:
-    environment: experiments/overcooked/environment.py
+    environment: overcooked/environment.py
 
 policy:
   name: OvercookedRandom
   description: Random agent for overcooked
   filepaths:
-    policy: experiments/overcooked/policy.py
+    policy: overcooked/policy.py
   checkpoint_interval: 0
 
 agents:

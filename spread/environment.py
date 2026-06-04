@@ -1,4 +1,4 @@
-from pettingzoo.mpe import simple_spread_v3
+from mpe2 import simple_spread_v3
 from collections.abc import Iterable
 
 

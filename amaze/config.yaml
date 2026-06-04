@@ -1,6 +1,8 @@
 use_case: amaze
 dependencies:
   - amaze-benchmarker[all]
+  - gymnasium
+  - scikit-learn
 
 environment:
   name: Amaze

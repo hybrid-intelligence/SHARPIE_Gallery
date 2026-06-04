@@ -1,0 +1,64 @@
+use_case: mario
+python_version: '3.13'
+dependencies:
+  - websockets
+  - opencv-python-headless
+  - gymnasium>=1.0.0
+  - gym-super-mario-bros>=8.0.0
+  - nes-py>=9.0.0
+  - stable-baselines3
+  - imitation
+installation_notes: "Requires Python >= 3.13"
+
+environment:
+  name: Mario
+  description: Gym Super Mario Bros environment for behavior cloning
+  filepaths:
+    environment: mario/environment.py
+
+policy:
+  name: MarioExpertPolicy
+  description: Human expert policy trained via behavior cloning
+  filepaths:
+    policy: mario/policy.py
+    human_expert: mario/human_expert.py
+  checkpoint_interval: 1
+
+agents:
+  - role: agent_1
+    name: Mario
+    description: Mario agent for training expert policy via behavior cloning
+    policy: MarioExpertPolicy
+    participant: true
+    keyboard_inputs:
+      ArrowLeft: 64
+      ArrowRight: 128
+      ArrowUp: 2
+      " ": 1
+      default: 0
+    keyboard_input_display:
+      ArrowLeft:
+        symbol: "\u2190"
+        label: Left
+      ArrowRight:
+        symbol: "\u2192"
+        label: Right
+      ArrowUp:
+        symbol: "\u2191"
+        label: Speed
+      " ":
+        symbol: "\u2423"
+        label: Jump
+    multiple_keyboard_inputs: true
+    inputs_type: other
+    textual_inputs: false
+
+experiment:
+  link: mario
+  name: Mario
+  short_description: Mario experiment - Single player
+  long_description: Train an expert policy for Super Mario Bros through behavior cloning from human demonstrations
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 60.0
+  wait_for_inputs: false
