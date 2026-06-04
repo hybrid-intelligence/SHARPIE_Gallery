@@ -95,7 +95,13 @@ def download_assets():
     finally:
         os.chdir(original_dir)
 
-download_assets()
+_assets_downloaded = False
+
+def ensure_assets_downloaded():
+    global _assets_downloaded
+    if not _assets_downloaded:
+        download_assets()
+        _assets_downloaded = True
 
 # =============================================================================
 # Global Constants

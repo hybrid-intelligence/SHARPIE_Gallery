@@ -26,7 +26,7 @@ dependencies:
   - numpy
   - scipy
   - tensorboard
-installation_notes: "Requires Python 3.10 and Ollama (https://ollama.ai). Assets downloaded automatically on first run."
+installation_notes: "Requires Python 3.10, Ollama (https://ollama.ai), and gdown (pip install gdown). Assets (robot URDFs, ViLD model, CLIPort checkpoint) are automatically downloaded from Google Drive on first environment initialization (~1GB)."
 
 environment:
   name: SayCan

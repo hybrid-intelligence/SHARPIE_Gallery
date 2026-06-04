@@ -15,7 +15,7 @@ python install.py saycan
 
 ### ⚠️ Important
 
-Requires Python 3.10 and Ollama (https://ollama.ai). Assets downloaded automatically on first run.
+Requires Python 3.10, Ollama (https://ollama.ai), and gdown (`pip install gdown`). Assets (robot URDFs, ViLD model, CLIPort checkpoint, ~1GB) are automatically downloaded from Google Drive on first environment initialization.
 
 ## Dependencies
 

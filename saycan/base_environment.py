@@ -37,7 +37,7 @@ if SAYCAN_DIR not in sys.path:
     sys.path.insert(0, SAYCAN_DIR)
 
 from pick_place_env import PickPlaceEnv
-from config import PICK_TARGETS, PLACE_TARGETS
+from config import PICK_TARGETS, PLACE_TARGETS, ensure_assets_downloaded
 from cliport import get_cliport
 # Import LLM and helpers for planning
 from llm import make_options, gpt3_scoring, gpt3_context, termination_string
@@ -50,6 +50,7 @@ class SayCanBaseEnvironment:
 
     def __init__(self):
         """Initialize the environment."""
+        ensure_assets_downloaded()
         self.env = PickPlaceEnv()
         self.config = None
         self._step_count = 0
