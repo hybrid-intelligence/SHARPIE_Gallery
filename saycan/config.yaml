@@ -1,31 +1,38 @@
 use_case: saycan
 python_version: '3.10'
 dependencies:
-  - ftfy
-  - regex
-  - tqdm
-  - fvcore
-  - git+https://github.com/openai/CLIP.git
-  - gdown
-  - moviepy
-  - imageio
-  - imageio-ffmpeg
-  - opencv-python
-  - pillow
-  - matplotlib
-  - ipython
-  - pybullet
-  - ollama
-  - easydict
-  - tensorflow
+  # Core ML frameworks (needed for validation)
+  - numpy
+  - scipy
   - torch
   - torchvision
   - jax[cuda]
   - flax
   - optax
-  - numpy
-  - scipy
+  - tensorflow
   - tensorboard
+  
+  # Computer vision and utilities
+  - opencv-python
+  - pillow
+  - matplotlib
+  - imageio
+  - imageio-ffmpeg
+  - moviepy
+  
+  # CLIP and dependencies
+  - ftfy
+  - regex
+  - tqdm
+  - fvcore
+  - git+https://github.com/openai/CLIP.git
+  
+  # PyBullet and environment tools
+  - pybullet
+  - gdown
+  - easydict
+  - ollama
+  - ipython
 installation_notes: "Requires Python 3.10, Ollama (https://ollama.ai), and gdown (pip install gdown). Assets (robot URDFs, ViLD model, CLIPort checkpoint) are automatically downloaded from Google Drive on first environment initialization (~1GB)."
 
 environment:
