@@ -195,9 +195,10 @@ def cleanup_models():
             torch.cuda.empty_cache()
 
 
-# Backward compatibility - load on import (can be disabled by setting LAZY_LOAD=true)
+# Lazy loading by default - models loaded only when needed
+# Set VILD_EAGER_LOAD=true to load at import time (not recommended)
 import os as _os
-if _os.environ.get('VILD_LAZY_LOAD', '').lower() != 'true':
+if _os.environ.get('VILD_EAGER_LOAD', '').lower() == 'true':
     clip_model, clip_preprocess = get_clip_model()
     session = get_tf_session()
 else:
