@@ -1,0 +1,62 @@
+use_case: saycan
+python_version: '3.10'
+dependencies:
+  - ftfy
+  - regex
+  - tqdm
+  - fvcore
+  - git+https://github.com/openai/CLIP.git
+  - gdown
+  - moviepy
+  - imageio
+  - imageio-ffmpeg
+  - opencv-python
+  - pillow
+  - matplotlib
+  - ipython
+  - pybullet
+  - ollama
+  - easydict
+  - tensorflow
+  - torch
+  - torchvision
+  - jax[cuda]
+  - flax
+  - optax
+  - numpy
+  - scipy
+installation_notes: "Requires Python 3.10 and Ollama (https://ollama.ai). Assets downloaded automatically on first run."
+
+environment:
+  name: SayCan
+  description: Language-conditioned robotic manipulation with LLM planning
+  filepaths:
+    environment: saycan/environment.py
+
+policy:
+  name: SayCan
+  description: SayCan policy with LLM planning and CLIPort execution
+  filepaths:
+    policy: saycan/policy.py
+  checkpoint_interval: 0
+
+agents:
+  - role: agent_0
+    name: Robot
+    description: UR5e robot arm with Robotiq gripper
+    policy: SayCan
+    participant: true
+    keyboard_inputs: {}
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: true
+
+experiment:
+  link: saycan
+  name: SayCan
+  short_description: Robot manipulation with natural language instructions
+  long_description: "Guide a robot arm to pick and place objects using natural language instructions. The system uses ViLD for object detection, an LLM for task planning, and CLIPort for language-conditioned manipulation.\n\nYou can give instructions like:\n- \"task: put all blocks in bowls\" - Set a high-level task\n- \"pick the blue block and place it on the red bowl\" - Direct instruction"
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 24.0
+  wait_for_inputs: false
