@@ -4,8 +4,8 @@ load_pregenerated = True  #@param {type:"boolean"}
 # Load pre-existing dataset.
 if load_pregenerated:
   if not os.path.exists('dataset-9999.pkl'):
-    # !gdown --id 1TECwTIfawxkRYbzlAey0z1mqXKcyfPc-
-    !gdown --id 1yCz6C-6eLWb4SFYKdkM-wz5tlMjbG2h8
+    # !gdown 1TECwTIfawxkRYbzlAey0z1mqXKcyfPc-
+    !gdown 1yCz6C-6eLWb4SFYKdkM-wz5tlMjbG2h8
   dataset = pickle.load(open('dataset-9999.pkl', 'rb'))  # ~10K samples.
   dataset_size = len(dataset['text'])
 

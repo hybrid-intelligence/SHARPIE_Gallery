@@ -39,9 +39,9 @@ def download_assets():
         # Download PyBullet assets (UR5e robot, Robotiq gripper, bowl)
         if not os.path.exists('ur5e/ur5e.urdf'):
             print("Downloading UR5e robot assets...")
-            subprocess.run(['gdown', '--id', '1Cc_fDSBL6QiDvNT4dpfAEbhbALSVoWcc'], check=True)
-            subprocess.run(['gdown', '--id', '1yOMEm-Zp_DL3nItG9RozPeJAmeOldekX'], check=True)
-            subprocess.run(['gdown', '--id', '1GsqNLhEl9dd4Mc3BM0dX3MibOI1FVWNM'], check=True)
+            subprocess.run(['gdown', '1Cc_fDSBL6QiDvNT4dpfAEbhbALSVoWcc'], check=True)
+            subprocess.run(['gdown', '1yOMEm-Zp_DL3nItG9RozPeJAmeOldekX'], check=True)
+            subprocess.run(['gdown', '1GsqNLhEl9dd4Mc3BM0dX3MibOI1FVWNM'], check=True)
 
             print("Extracting assets...")
             subprocess.run(['unzip', '-o', 'ur5e.zip'], check=True)
@@ -63,12 +63,12 @@ def download_assets():
             print("Downloading CLIPort pretrained checkpoint...")
             os.makedirs('cliport_checkpoint', exist_ok=True)
             # CLIPort checkpoint from original SayCan paper
-            subprocess.run(['gdown', '--id', '1NqJDTyxZOOqvCM2RZthJT5qPX3Xi-a-g', '-O', 'cliport_checkpoint/checkpoint'], check=False)
+            subprocess.run(['gdown', '1NqJDTyxZOOqvCM2RZthJT5qPX3Xi-a-g', '-O', 'cliport_checkpoint/checkpoint'], check=False)
 
         # Download training dataset (optional, for fine-tuning)
         if not os.path.exists('dataset-9999.pkl'):
             print("Downloading CLIPort training dataset...")
-            subprocess.run(['gdown', '--id', '1yCz6C-6eLWb4SFYKdkM-wz5tlMjbG2h8'], check=False)
+            subprocess.run(['gdown', '1yCz6C-6eLWb4SFYKdkM-wz5tlMjbG2h8'], check=False)
     finally:
         os.chdir(original_dir)
 

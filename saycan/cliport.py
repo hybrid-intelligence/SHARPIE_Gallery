@@ -225,7 +225,7 @@ if load_pretrained:
   if not os.path.exists(ckpt_path):
     import subprocess
     print("Downloading CLIPort checkpoint...")
-    subprocess.run(['gdown', '--id', '1Nq0q1KbqHOA5O7aRSu4u7-u27EMMXqgP', '-O', ckpt_path], check=False)
+    subprocess.run(['gdown', '1Nq0q1KbqHOA5O7aRSu4u7-u27EMMXqgP', '-O', ckpt_path], check=False)
 
   try:
     # Attempt to restore directly. This will fail if 'step' is missing in the checkpoint.
