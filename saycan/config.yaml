@@ -54,7 +54,8 @@ agents:
     description: UR5e robot arm with Robotiq gripper
     policy: SayCan
     participant: true
-    keyboard_inputs: {}
+    keyboard_inputs: 
+      default: 0 
     multiple_keyboard_inputs: false
     inputs_type: other
     textual_inputs: true
