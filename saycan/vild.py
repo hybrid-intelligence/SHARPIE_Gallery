@@ -255,15 +255,7 @@ def build_text_embedding(categories):
     return all_text_embeddings.cpu().numpy().T
 
 
-# Load ViLD TensorFlow model
-config = tf.ConfigProto(allow_soft_placement=True)
-if torch.cuda.is_available():
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
-    config = tf.ConfigProto(gpu_options=gpu_options, allow_soft_placement=True)
-session = tf.Session(graph=tf.Graph(), config=config)
-saved_model_dir = os.path.join(SAYCAN_DIR, "image_path_v2")
-_ = tf.saved_model.loader.load(session, ["serve"], saved_model_dir)
-
+# Numbered categories for visualization (loaded lazily when needed)
 numbered_categories = [{"name": str(idx), "id": idx} for idx in range(50)]
 numbered_category_indices = {cat["id"]: cat for cat in numbered_categories}
 
@@ -546,8 +538,11 @@ def vild(image_path, category_name_string, params, plot_on=True, prompt_swaps=[]
     max_boxes_to_draw, nms_threshold, min_rpn_score_thresh, min_box_area, max_box_area = params
     fig_size_h = min(max(5, int(len(category_names) / 2.5)), 10)
 
+    # Get TensorFlow session (lazy-loaded)
+    tf_session = get_tf_session()
+
     # Run ViLD model
-    roi_boxes, roi_scores, detection_boxes, scores_unused, box_outputs, detection_masks, visual_features, image_info = session.run(
+    roi_boxes, roi_scores, detection_boxes, scores_unused, box_outputs, detection_masks, visual_features, image_info = tf_session.run(
         ["RoiBoxes:0", "RoiScores:0", "2ndStageBoxes:0", "2ndStageScoresUnused:0",
          "BoxOutputs:0", "MaskOutputs:0", "VisualFeatOutputs:0", "ImageInfo:0"],
         feed_dict={"Placeholder:0": [image_path]})
