@@ -25,11 +25,12 @@ import numpy as np
 import pybullet
 import pybullet_data
 from robot import Robotiq2F85
-from config import COLORS, BOUNDS, PIXEL_SIZE, SAYCAN_DIR
+from config import COLORS, BOUNDS, PIXEL_SIZE, SAYCAN_DIR, ensure_assets_downloaded
 
 class PickPlaceEnv():
 
   def __init__(self):
+    ensure_assets_downloaded()
     self.dt = 1/480
     self.sim_step = 0
 

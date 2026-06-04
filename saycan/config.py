@@ -19,34 +19,11 @@ import collections
 import datetime
 import os
 import random
+import subprocess
 import threading
 import time
 
-import cv2  # Used by ViLD.
-import clip
-from easydict import EasyDict
-import flax
-from flax import linen as nn
-from flax.training import checkpoints
-from flax.metrics import tensorboard
-import imageio
-from heapq import nlargest
-import IPython
-import jax
-import jax.numpy as jnp
-import matplotlib.pyplot as plt
-from moviepy import ImageSequenceClip
 import numpy as np
-import optax
-import pickle
-from PIL import Image
-import pybullet
-import pybullet_data
-import tensorflow.compat.v1 as tf
-import torch
-from tqdm import tqdm
-
-import subprocess
 
 # Get the directory where this script is located
 SAYCAN_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -98,6 +75,7 @@ def download_assets():
 _assets_downloaded = False
 
 def ensure_assets_downloaded():
+    """Ensure all required assets are downloaded. Called explicitly when needed."""
     global _assets_downloaded
     if not _assets_downloaded:
         download_assets()

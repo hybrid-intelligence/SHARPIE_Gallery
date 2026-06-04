@@ -24,25 +24,49 @@ Reference:
     Robotic Affordances. arXiv preprint arXiv:2204.01691.
 """
 
-import cv2
 import os
 import sys
-import tempfile
-import numpy as np
-from PIL import Image
 
 # Add the saycan directory to path for imports
 SAYCAN_DIR = os.path.dirname(os.path.abspath(__file__))
 if SAYCAN_DIR not in sys.path:
     sys.path.insert(0, SAYCAN_DIR)
 
-from pick_place_env import PickPlaceEnv
-from config import PICK_TARGETS, PLACE_TARGETS, ensure_assets_downloaded
-from cliport import get_cliport
-# Import LLM and helpers for planning
-from llm import make_options, gpt3_scoring, gpt3_context, termination_string
-from helpers import normalize_scores, step_to_nlp, affordance_scoring
-from vild import vild, category_name_string, vild_params
+
+def _lazy_imports():
+    """Lazy import heavy dependencies only when needed."""
+    import cv2
+    import tempfile
+    import numpy as np
+    from PIL import Image
+    from pick_place_env import PickPlaceEnv
+    from config import PICK_TARGETS, PLACE_TARGETS, ensure_assets_downloaded
+    from cliport import get_cliport
+    from llm import make_options, gpt3_scoring, gpt3_context, termination_string
+    from helpers import normalize_scores, step_to_nlp, affordance_scoring
+    from vild import vild, category_name_string, vild_params
+    
+    return {
+        'cv2': cv2,
+        'tempfile': tempfile,
+        'np': np,
+        'Image': Image,
+        'PickPlaceEnv': PickPlaceEnv,
+        'PICK_TARGETS': PICK_TARGETS,
+        'PLACE_TARGETS': PLACE_TARGETS,
+        'ensure_assets_downloaded': ensure_assets_downloaded,
+        'get_cliport': get_cliport,
+        'make_options': make_options,
+        'gpt3_scoring': gpt3_scoring,
+        'gpt3_context': gpt3_context,
+        'termination_string': termination_string,
+        'normalize_scores': normalize_scores,
+        'step_to_nlp': step_to_nlp,
+        'affordance_scoring': affordance_scoring,
+        'vild': vild,
+        'category_name_string': category_name_string,
+        'vild_params': vild_params,
+    }
 
 
 class SayCanBaseEnvironment:
@@ -50,8 +74,13 @@ class SayCanBaseEnvironment:
 
     def __init__(self):
         """Initialize the environment."""
-        ensure_assets_downloaded()
-        self.env = PickPlaceEnv()
+        self._initialized = False
+        self.cv2 = None
+        self.np = None
+        self.Image = None
+        self.tempfile = None
+        
+        self.env = None
         self.config = None
         self._step_count = 0
         self._max_steps = 100
@@ -65,6 +94,19 @@ class SayCanBaseEnvironment:
         self._options = None
         self._found_objects = None
         self._task_step_count = 0
+    
+    def _ensure_initialized(self):
+        """Lazy initialization of heavy dependencies and environment."""
+        if not self._initialized:
+            mods = _lazy_imports()
+            self.cv2 = mods['cv2']
+            self.np = mods['np']
+            self.Image = mods['Image']
+            self.tempfile = mods['tempfile']
+            
+            PickPlaceEnv = mods['PickPlaceEnv']
+            self.env = PickPlaceEnv()
+            self._initialized = True
 
     def reset(self, config=None):
         """
@@ -78,6 +120,7 @@ class SayCanBaseEnvironment:
             observation: Initial observation dict with 'image', 'xyzmap', 'pick', 'place'
             info: Additional information dict
         """
+        self._ensure_initialized()
         self._step_count = 0
         self.cached_video_frames = []
 
@@ -111,8 +154,9 @@ class SayCanBaseEnvironment:
         Args:
             task_text: Task instruction (e.g., "put all the blocks in different corners")
         """
+        mods = _lazy_imports()
         self._current_task = task_text
-        self._gpt3_prompt = gpt3_context + "\n# " + task_text + "\n"
+        self._gpt3_prompt = mods['gpt3_context'] + "\n# " + task_text + "\n"
         self._task_step_count = 0
         self._found_objects = None
         self._options = None
@@ -128,19 +172,20 @@ class SayCanBaseEnvironment:
         Returns:
             found_objects: List of detected object names
         """
+        mods = _lazy_imports()
         if observation is None:
             observation = self.env.get_observation()
 
         # Save image to temp file for ViLD
         image = observation['image']
-        with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as f:
+        with mods['tempfile'].NamedTemporaryFile(suffix='.jpg', delete=False) as f:
             temp_path = f.name
-            Image.fromarray(image).save(temp_path)
+            mods['Image'].fromarray(image).save(temp_path)
 
         try:
             # Run ViLD detection
             prompt_swaps = [('block', 'cube')]
-            found_objects = vild(temp_path, category_name_string, vild_params,
+            found_objects = mods['vild'](temp_path, mods['category_name_string'], mods['vild_params'],
                                 plot_on=False, prompt_swaps=prompt_swaps)
             print(f"Environment: Detected objects: {found_objects}")
         finally:
@@ -160,6 +205,7 @@ class SayCanBaseEnvironment:
             action_text: Natural language action instruction
             done: Whether the task is complete
         """
+        mods = _lazy_imports()
         if observation is None:
             observation = self.env.get_observation()
 
@@ -169,29 +215,29 @@ class SayCanBaseEnvironment:
 
         # Create options if not already done
         if self._options is None:
-            self._options = make_options(PICK_TARGETS, PLACE_TARGETS,
-                                         termination_string=termination_string)
+            self._options = mods['make_options'](mods['PICK_TARGETS'], mods['PLACE_TARGETS'],
+                                         termination_string=mods['termination_string'])
 
         # Calculate affordance scores based on detected objects
-        affordance_scores = affordance_scoring(self._options, self._found_objects,
+        affordance_scores = mods['affordance_scoring'](self._options, self._found_objects,
                                                block_name="box", bowl_name="circle",
                                                verbose=False)
 
         # Get LLM scores
-        llm_scores, _ = gpt3_scoring(self._gpt3_prompt, self._options, verbose=True)
+        llm_scores, _ = mods['gpt3_scoring'](self._gpt3_prompt, self._options, verbose=True)
 
         # Combine scores
         combined_scores = {
-            option: np.exp(llm_scores[option]) * affordance_scores[option]
+            option: mods['np'].exp(llm_scores[option]) * affordance_scores[option]
             for option in self._options
         }
-        combined_scores = normalize_scores(combined_scores)
+        combined_scores = mods['normalize_scores'](combined_scores)
 
         # Select best action
         selected_task = max(combined_scores, key=combined_scores.get)
 
         # Check for termination
-        if selected_task == termination_string:
+        if selected_task == mods['termination_string']:
             print("Environment: Task completed (termination signal)")
             return "done", True
 
@@ -205,7 +251,7 @@ class SayCanBaseEnvironment:
             return "done", True
 
         # Convert to natural language
-        action_text = step_to_nlp(selected_task)
+        action_text = mods['step_to_nlp'](selected_task)
         print(f"Environment: Step {self._task_step_count} - {action_text}")
         return action_text, False
 
@@ -228,29 +274,30 @@ class SayCanBaseEnvironment:
             truncated: Whether the episode was truncated (bool)
             info: Additional information (dict)
         """
+        mods = _lazy_imports()
         self._step_count += 1
 
         if len(self.cached_video_frames) > 0:
-            return np.array([]), 0.0, False, False, {"info": "No action taken"}
+            return mods['np'].array([]), 0.0, False, False, {"info": "No action taken"}
 
         # Extract action from dict (single-agent environment)
         action = list(action_dict.values())[0] if isinstance(action_dict, dict) else action_dict
 
         # Handle different action types
         if action == 'done':
-            return np.array([]), 0.0, True, False, {"info": "Task completed"}
+            return mods['np'].array([]), 0.0, True, False, {"info": "Task completed"}
         elif isinstance(action, str) and action.startswith('task:'):
             # Execute complete task automatically
             task_text = action[5:].strip()
             results = self.run_task(task_text)
-            return np.array([]), results["total_reward"], False, False, results
+            return mods['np'].array([]), results["total_reward"], False, False, results
         elif action:
             # Direct text instruction
             obs, reward, _, info = self._step_with_text(action)
             # Get the frames buffer
             self.cached_video_frames = self.env.cache_video
         else:
-            return np.array([]), 0.0, False, False, {"info": "No action taken"}
+            return mods['np'].array([]), 0.0, False, False, {"info": "No action taken"}
 
         # Check termination conditions
         terminated = False
@@ -263,8 +310,9 @@ class SayCanBaseEnvironment:
 
     def _step_with_text(self, text):
         """Execute a step using CLIPort with text instruction."""
+        mods = _lazy_imports()
         if self._cliport is None:
-            self._cliport = get_cliport()
+            self._cliport = mods['get_cliport']()
 
         # Get current observation
         obs = self.env.get_observation()
@@ -285,12 +333,15 @@ class SayCanBaseEnvironment:
 
     def render(self):
         """Render the environment."""
+        self._ensure_initialized()
+        mods = _lazy_imports()
         if len(self.cached_video_frames) > 0:
-            return cv2.cvtColor(self.cached_video_frames.pop(0), cv2.COLOR_BGR2RGB)
-        return cv2.cvtColor(self.env.get_camera_image(), cv2.COLOR_BGR2RGB)
+            return mods['cv2'].cvtColor(self.cached_video_frames.pop(0), mods['cv2'].COLOR_BGR2RGB)
+        return mods['cv2'].cvtColor(self.env.get_camera_image(), mods['cv2'].COLOR_BGR2RGB)
 
     def get_observation(self):
         """Get current observation without stepping."""
+        self._ensure_initialized()
         return self.env.get_observation()
 
     def run_task(self, task_text, max_steps=5):
