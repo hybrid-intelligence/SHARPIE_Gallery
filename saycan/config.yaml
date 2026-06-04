@@ -25,6 +25,7 @@ dependencies:
   - optax
   - numpy
   - scipy
+  - tensorboard
 installation_notes: "Requires Python 3.10 and Ollama (https://ollama.ai). Assets downloaded automatically on first run."
 
 environment:
