@@ -1,0 +1,100 @@
+use_case: smacv2
+python_version: '3.10'
+dependencies:
+  - git+https://github.com/oxwhirl/smacv2.git
+  - numpy
+  - opencv-python-headless
+installation_notes: "Requires StarCraft II installation and SMAC_Maps. See https://github.com/oxwhirl/smacv2 for installation instructions."
+
+environment:
+  name: SMACv2 Terran 5v5
+  description: SMACv2 StarCraft II multi-agent benchmark environment. Control units in cooperative battles against enemy forces with randomized unit compositions and start positions.
+  filepaths:
+    environment: smacv2/environment.py
+
+policy:
+  name: SMACv2 Heuristic
+  description: Heuristic policy for SMACv2 with participant guidance. Attack nearest enemy if in range, move towards enemies otherwise.
+  filepaths:
+    policy: smacv2/policy.py
+    rgb_capture: smacv2/rgb_capture.py
+  checkpoint_interval: 0
+
+agents:
+  - role: agent_0
+    name: Unit 1
+    description: Controls unit 1 in the battle. Use arrow keys to guide movement.
+    policy: SMACv2 Heuristic
+    participant: true
+    keyboard_inputs:
+      ArrowUp: 1
+      ArrowDown: 2
+      ArrowLeft: 3
+      ArrowRight: 4
+      default: -1
+    keyboard_input_display:
+      ArrowUp:
+        symbol: "\u2191"
+        label: North
+      ArrowDown:
+        symbol: "\u2193"
+        label: South
+      ArrowLeft:
+        symbol: "\u2190"
+        label: West
+      ArrowRight:
+        symbol: "\u2192"
+        label: East
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: false
+
+  - role: agent_1
+    name: Unit 2
+    description: AI-controlled unit using heuristic policy.
+    policy: SMACv2 Heuristic
+    participant: false
+    keyboard_inputs: {}
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: false
+
+  - role: agent_2
+    name: Unit 3
+    description: AI-controlled unit using heuristic policy.
+    policy: SMACv2 Heuristic
+    participant: false
+    keyboard_inputs: {}
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: false
+
+  - role: agent_3
+    name: Unit 4
+    description: AI-controlled unit using heuristic policy.
+    policy: SMACv2 Heuristic
+    participant: false
+    keyboard_inputs: {}
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: false
+
+  - role: agent_4
+    name: Unit 5
+    description: AI-controlled unit using heuristic policy.
+    policy: SMACv2 Heuristic
+    participant: false
+    keyboard_inputs: {}
+    multiple_keyboard_inputs: false
+    inputs_type: other
+    textual_inputs: false
+
+experiment:
+  link: smacv2
+  name: SMACv2 Terran 5v5
+  short_description: Control Terran units in a 5v5 StarCraft II battle
+  long_description: "Guide your units in a cooperative 5v5 battle against enemy forces. Use arrow keys to influence movement while AI heuristics handle combat decisions.\n\nControls:\n- \u2191 - Move North\n- \u2193 - Move South\n- \u2190 - Move West\n- \u2192 - Move East\n\nFeatures randomized unit compositions (Marines, Marauders, Medivacs) and start positions."
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 10.0
+  wait_for_inputs: false
