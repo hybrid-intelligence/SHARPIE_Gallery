@@ -93,9 +93,27 @@ Each use case's `config.yaml` contains:
 - `dependencies` - List of pip packages to install
 - `installation_notes` - **(Optional)** Installation notes (e.g., "Requires Python >= 3.13")
 - `environment` - Environment configuration (name, description, filepaths)
-- `policy` - Optional policy configuration
-- `agents` - List of agent configurations with keyboard_input_display
+- `policy` - **(Optional)** Policy configuration
+- `agents` - List of agent configurations
 - `experiment` - Experiment configuration
+
+### Environment Configuration
+
+The `environment` section defines the simulation environment:
+- `name` - Display name for the environment
+- `description` - Description of what the environment does
+- `filepaths` - Dictionary containing:
+  - `environment` - Path to environment.py file (required)
+
+### Policy Configuration
+
+The optional `policy` section defines the agent policy:
+- `name` - Policy name
+- `description` - **(Optional)** Policy description
+- `filepaths` - Dictionary containing:
+  - `policy` - Path to policy.py file (required)
+  - Additional support files (e.g., `tamer`, `human_expert`, `rgb_capture`) (optional)
+- `checkpoint_interval` - How often to save model checkpoints (0 = disabled)
 
 ### Agent Configuration Fields
 
@@ -103,13 +121,25 @@ Each agent in the `agents` list can include:
 - `role` - Agent identifier (e.g., agent_0, agent_1)
 - `name` - Display name
 - `description` - Agent description
-- `policy` - Policy name (or null for human-only)
+- `policy` - Policy name (or null for human-only control)
 - `participant` - Whether agent participates in experiments
 - `keyboard_inputs` - Key mapping for actions
 - `keyboard_input_display` - **(Optional)** Display configuration for keyboard inputs
 - `multiple_keyboard_inputs` - **(Optional)** Allow multiple simultaneous key presses (default: false)
-- `inputs_type` - **(Optional)** Input type: "actions" or "other" (default: "other")
+- `inputs_type` - **(Optional)** Input type: "actions", "reward", or "other" (default: "other")
 - `textual_inputs` - **(Optional)** Accept text input (default: false)
+
+### Experiment Configuration
+
+The `experiment` section defines how the experiment runs:
+- `link` - URL slug/identifier for the experiment
+- `name` - Display name
+- `short_description` - Brief description for listings
+- `long_description` - Detailed description with instructions
+- `enabled` - Whether the experiment is active (boolean)
+- `number_of_episodes` - Number of episodes to run
+- `target_fps` - Target frames per second for rendering
+- `wait_for_inputs` - Whether to pause for human input each step (boolean)
 
 ## Requirements
 
