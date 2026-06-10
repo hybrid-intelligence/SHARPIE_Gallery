@@ -129,7 +129,7 @@ def validate_files(config: dict, check_only=False, verbosity=1):
 
 
 def setup_database(config: dict, webserver_dir: Path, verbosity=1):
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
     sys.path.insert(0, str(webserver_dir))
     import django
     django.setup()
