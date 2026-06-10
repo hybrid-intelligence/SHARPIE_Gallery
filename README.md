@@ -141,12 +141,6 @@ The `experiment` section defines how the experiment runs:
 - `target_fps` - Target frames per second for rendering
 - `wait_for_inputs` - Whether to pause for human input each step (boolean)
 
-## Requirements
-
-- Python 3.10+ (varies by use case)
-- SHARPIE (main repository in adjacent directory)
-- Django 5.2+
-
 ## Python Version Compatibility
 
 Different use cases require different Python versions. The `python_version` field in `config.yaml` specifies the required version:
