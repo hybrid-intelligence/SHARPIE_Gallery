@@ -161,10 +161,28 @@ def setup_database(config: dict, webserver_dir: Path, verbosity=1):
         else:
             agent_data['policy'] = None
         
-        agent, created = Agent.objects.update_or_create(
+        existing_agents = Agent.objects.filter(
             role=agent_config['role'],
-            defaults=agent_data
+            name=agent_config['name']
         )
+        
+        if existing_agents.count() > 1:
+            keep_agent = existing_agents.first()
+            existing_agents.exclude(pk=keep_agent.pk).delete()
+            for key, val in agent_data.items():
+                setattr(keep_agent, key, val)
+            keep_agent.save()
+            agent, created = keep_agent, False
+        elif existing_agents.count() == 1:
+            agent = existing_agents.first()
+            for key, val in agent_data.items():
+                setattr(agent, key, val)
+            agent.save()
+            created = False
+        else:
+            agent = Agent.objects.create(**agent_data)
+            created = True
+        
         created_agents.append(agent)
         log(f"  {'Created' if created else 'Updated'} Agent: {agent.name} ({agent.role})", level=1, verbosity=verbosity)
     
