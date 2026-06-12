@@ -17,7 +17,7 @@ policy:
   checkpoint_interval: 1
 
 agents:
-  - role: agent_mct
+  - role: mountain_tamer_agent
     name: Mountain car TAMER agent
     description: ""
     policy: Mountain car TAMER

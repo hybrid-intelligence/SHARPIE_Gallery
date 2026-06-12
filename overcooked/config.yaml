@@ -18,7 +18,7 @@ policy:
   checkpoint_interval: 0
 
 agents:
-  - role: Agent
+  - role: overcooked_agent
     name: Agent
     description: Artificial player
     policy: OvercookedRandom
@@ -32,7 +32,7 @@ agents:
     inputs_type: actions
     textual_inputs: false
 
-  - role: Human
+  - role: overcooked_human
     name: Human
     description: Human player
     policy: null
