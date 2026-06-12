@@ -17,6 +17,7 @@ import subprocess
 import argparse
 import importlib.util
 from pathlib import Path
+import importlib.metadata;
 
 import yaml
 
@@ -48,14 +49,27 @@ def get_paths(args):
     if args.sharpie_dir:
         sharpie_dir = Path(args.sharpie_dir)
     else:
-        sharpie_dir = SCRIPT_DIR.parent / 'SHARPIE'
+        sharpie_dir = get_sharpie_dir_from_env()
+        if sharpie_dir is None:
+            sharpie_dir = SCRIPT_DIR.parent / 'SHARPIE'
     
     if args.webserver_dir:
         webserver_dir = Path(args.webserver_dir)
     else:
-        webserver_dir = sharpie_dir / 'webserver'
+        webserver_dir = sharpie_dir / 'sharpie/webserver'
     
     return sharpie_dir, webserver_dir
+
+def get_sharpie_dir_from_env()->Path | None:
+    """
+    Returns absolute SHARPIE directory path from python's internal import library or None 
+    if not found.
+    """
+    try:
+        path = importlib.metadata.distribution('sharpie')._path.resolve()
+        return path
+    except importlib.metadata.PackageNotFoundError:
+        return None
 
 
 def get_verbosity(args):
@@ -126,18 +140,35 @@ def validate_files(config: dict, check_only=False, verbosity=1):
         if error_msg.startswith('❌ '):
             error_msg = error_msg[3:]
         raise RuntimeError(error_msg)
+    
+def relative_to_absolute_path(path: str) -> str:
+    """Convert a single file path to an absolute path if it is currently relative."""
+    if not os.path.isabs(path):
+        return str(SCRIPT_DIR / path)
+    return path
 
+def relative_to_absolute_paths(config:dict)->dict:
+    """
+    Converts file paths in ``env_data`` to absolute paths if they are currently relative for the following fields:
+        - filepaths: List of file paths that the environment depends on.
+    """
+    for object_key, object_value in config.items():
+        if 'filepaths' in object_value:
+            for key, value in object_value['filepaths'].items():
+                config[object_key]['filepaths'][key] = relative_to_absolute_path(value)
+    return config
 
 def setup_database(config: dict, webserver_dir: Path, verbosity=1):
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sharpie.webserver.server.settings')
     sys.path.insert(0, str(webserver_dir))
     import django
     django.setup()
     
     # Django models must be imported after django.setup()
-    from experiment.models import Environment, Experiment, Policy, Agent
+    from sharpie.webserver.experiment.models import Environment, Experiment, Policy, Agent
     
     env_data = config['environment'].copy()
+    env_data = relative_to_absolute_paths(env_data)
     env, created = Environment.objects.update_or_create(
         name=env_data['name'],
         defaults=env_data
@@ -214,16 +245,19 @@ def install_use_case(use_case: str, webserver_dir: Path, check_only=False, verbo
     
     show_installation_notes(config, verbosity)
     
-    log("Step 1/3: Checking dependencies...", level=1, verbosity=verbosity)
+    log("Step 1/4: Checking dependencies...", level=1, verbosity=verbosity)
     check_dependencies(config, verbosity)
     
-    log("\nStep 2/3: Validating files...", level=1, verbosity=verbosity)
+    log("\nStep 2/4: Validating files...", level=1, verbosity=verbosity)
     validate_files(config, check_only=check_only, verbosity=verbosity)
     
     if check_only:
         return
     
-    log("\nStep 3/3: Setting up database...", level=1, verbosity=verbosity)
+    log("\nStep 3/4: Converting relative filepaths to absolute filepaths...", level=1, verbosity=verbosity)
+    config = relative_to_absolute_paths(config)
+    
+    log("\nStep 4/4: Setting up database...", level=1, verbosity=verbosity)
     setup_database(config, webserver_dir, verbosity)
     
     log(f"\n✅ {use_case} installed successfully!", level=1, verbosity=verbosity)
