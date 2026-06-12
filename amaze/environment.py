@@ -256,7 +256,7 @@ def input_mapping(inputs):
         else:
             inputs[agent] = 0
 
-    return inputs['agent_0']
+    return inputs['amaze_agent_0']
 
 def termination_condition(terminated, truncated):
     return terminated or truncated

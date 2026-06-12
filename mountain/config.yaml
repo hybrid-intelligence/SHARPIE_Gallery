@@ -9,7 +9,7 @@ environment:
     environment: mountain/environment.py
 
 agents:
-  - role: agent_1
+  - role: mountain_agent_1
     name: Car
     description: Mountain car
     policy: null

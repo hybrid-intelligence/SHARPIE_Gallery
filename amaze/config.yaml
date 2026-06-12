@@ -19,8 +19,8 @@ policy:
   checkpoint_interval: 1
 
 agents:
-  - role: agent_0
-    name: Agent
+  - role: amaze_agent_0
+    name: Amaze agent
     description: ""
     policy: Amaze
     participant: true

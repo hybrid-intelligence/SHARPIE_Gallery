@@ -18,7 +18,7 @@ policy:
   checkpoint_interval: 1
 
 agents:
-  - role: agent
+  - role: frozen_agent
     name: Frozen agent
     description: ""
     policy: Frozen

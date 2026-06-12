@@ -9,7 +9,7 @@ environment:
     environment: tag/environment.py
 
 agents:
-  - role: agent_0
+  - role: tag_agent_0
     name: Fleeing agent
     description: Fleeing agent
     policy: null
@@ -37,7 +37,7 @@ agents:
     inputs_type: actions
     textual_inputs: false
 
-  - role: adversary_0
+  - role: tag_adversary_0
     name: Adversary agent
     description: ""
     policy: null

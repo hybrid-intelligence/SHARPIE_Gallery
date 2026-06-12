@@ -21,7 +21,7 @@ policy:
   checkpoint_interval: 0
 
 agents:
-  - role: agent_0
+  - role: smacv2_agent_0
     name: Unit 1
     description: Controls unit 1 in the battle. Use arrow keys to guide movement.
     policy: SMACv2 Heuristic
@@ -49,7 +49,7 @@ agents:
     inputs_type: other
     textual_inputs: false
 
-  - role: agent_1
+  - role: smacv2_agent_1
     name: Unit 2
     description: AI-controlled unit using heuristic policy.
     policy: SMACv2 Heuristic
@@ -59,7 +59,7 @@ agents:
     inputs_type: other
     textual_inputs: false
 
-  - role: agent_2
+  - role: smacv2_agent_2
     name: Unit 3
     description: AI-controlled unit using heuristic policy.
     policy: SMACv2 Heuristic
@@ -69,7 +69,7 @@ agents:
     inputs_type: other
     textual_inputs: false
 
-  - role: agent_3
+  - role: smacv2_agent_3
     name: Unit 4
     description: AI-controlled unit using heuristic policy.
     policy: SMACv2 Heuristic
@@ -79,7 +79,7 @@ agents:
     inputs_type: other
     textual_inputs: false
 
-  - role: agent_4
+  - role: smacv2_agent_4
     name: Unit 5
     description: AI-controlled unit using heuristic policy.
     policy: SMACv2 Heuristic

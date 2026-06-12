@@ -25,7 +25,7 @@ policy:
   checkpoint_interval: 1
 
 agents:
-  - role: agent_1
+  - role: mario_agent_1
     name: Mario
     description: Mario agent for training expert policy via behavior cloning
     policy: MarioExpertPolicy

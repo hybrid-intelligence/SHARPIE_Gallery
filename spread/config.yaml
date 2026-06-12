@@ -16,7 +16,7 @@ policy:
   checkpoint_interval: 0
 
 agents:
-  - role: agent_0
+  - role: spread_agent_0
     name: Agent 1
     description: ""
     policy: Spread agent
@@ -44,7 +44,7 @@ agents:
     inputs_type: actions
     textual_inputs: false
 
-  - role: agent_1
+  - role: spread_agent_1
     name: Agent 2
     description: ""
     policy: Spread agent
@@ -56,7 +56,7 @@ agents:
     inputs_type: actions
     textual_inputs: false
 
-  - role: agent_2
+  - role: spread_agent_2
     name: Agent 3
     description: ""
     policy: Spread agent
