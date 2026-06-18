@@ -7,18 +7,23 @@ This repository presents use-cases for [SHARPIE](https://github.com/hybrid-intel
 ## Quick Start
 
 ### Prerequisites
-Activate your Python environment (conda or venv):
+Activate your Python environment (conda or venv) with SHARPIE installed:
 ```bash
 # Using conda
 conda activate sharpie
 
 # Or using venv
 source /path/to/venv/bin/activate
+
+# Ensure the database is set up and that there is an admin (superuser)
+sharpie-web migrate
+sharpie-web createsuperuser
 ```
 
 ### Install all use cases
 ```bash
-python install.py --all
+# navigate to SHARPIE root directory
+python install.py --all --connection-key secret
 ```
 
 ### Install specific use case
@@ -29,7 +34,7 @@ python install.py amaze --verbose           # Detailed output
 ```
 
 ### Custom installation paths
-Default location is `../SHARPIE` (relative to the gallery directory). Both arguments are optional and can be used independently:
+The default install location is the install location for the ``sharpie`` package. If ``sharpie`` has not been installed, the install script looks at `../SHARPIE` (relative to the gallery directory). As a third option, custom paths for the root sharpie-dir and the webserver-dir can be given. Both arguments are optional and can be used independently:
 ```bash
 python install.py amaze --sharpie-dir /path/to/SHARPIE           # webserver defaults to <sharpie-dir>/webserver
 python install.py amaze --webserver-dir /path/to/webserver       # sharpie-dir defaults to ../SHARPIE
@@ -61,6 +66,27 @@ python install.py --all --check            # Validate all
 - **smacv2** - StarCraft II multi-agent challenge
 - **spread** - Multi-agent coordination
 - **tag** - Multi-agent pursuit
+
+## Interacting with installed use case
+Open a terminal window, activate your environment:
+```bash
+# Using conda
+conda activate sharpie
+
+# Or using venv
+source /path/to/venv/bin/activate
+sharpie-web runserver
+```
+Simultaneously open a second terminal window and run:
+```bash
+# Using conda
+conda activate sharpie
+
+# Or using venv
+source /path/to/venv/bin/activate
+sharpie-runner runserver --connection-key secret
+```
+Open a browser and visit [localhost:8000](localhost:8000) to see all installed experiments.
 
 ## Development
 

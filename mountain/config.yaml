@@ -1,6 +1,6 @@
 use_case: mountain
 dependencies:
-  - gymnasium
+  - gymnasium[classic_control]
 
 environment:
   name: Mountain car
