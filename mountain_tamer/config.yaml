@@ -6,14 +6,14 @@ environment:
   name: Mountain car TAMER
   description: "Classic control task: drive a car up a mountain using momentum."
   filepaths:
-    environment: mountain_tamer/environment.py
+    environment: environment.py
 
 policy:
   name: Mountain car TAMER
   description: ""
   filepaths:
-    policy: mountain_tamer/policy.py
-    tamer: mountain_tamer/tamer.py
+    policy: policy.py
+    tamer: tamer.py
   checkpoint_interval: 1
 
 agents:

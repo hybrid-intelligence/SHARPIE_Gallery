@@ -8,13 +8,13 @@ environment:
   name: Overcooked
   description: Serve as many orders as possible with an AI teammate
   filepaths:
-    environment: overcooked/environment.py
+    environment: environment.py
 
 policy:
   name: OvercookedRandom
   description: Random agent for overcooked
   filepaths:
-    policy: overcooked/policy.py
+    policy: policy.py
   checkpoint_interval: 0
 
 agents:

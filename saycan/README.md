@@ -10,44 +10,45 @@ You can give instructions like:
 
 From the gallery root:
 ```bash
-python install.py saycan
+sharpie-install saycan --gallery-dir .
 ```
 
 ### ⚠️ Important
 
-Requires Python 3.10, Ollama (https://ollama.ai), and gdown (`pip install gdown`). Assets (robot URDFs, ViLD model, CLIPort checkpoint, ~1GB) are automatically downloaded from Google Drive on first environment initialization.
+Requires Python 3.10, Ollama (https://ollama.ai), and gdown (pip install gdown). Assets (robot URDFs, ViLD model, CLIPort checkpoint) are automatically downloaded from Google Drive on first environment initialization (~1GB).
 
 ## Dependencies
 
-- ftfy
-- regex
-- tqdm
-- fvcore
-- git+https://github.com/openai/CLIP.git
-- gdown
-- moviepy
-- imageio
-- imageio-ffmpeg
-- opencv-python
-- pillow
-- matplotlib
-- ipython
-- pybullet
-- ollama
-- easydict
-- tensorflow
+- numpy
+- scipy
 - torch
 - torchvision
 - jax[cuda]
 - flax
 - optax
-- numpy
-- scipy
+- tensorflow
+- tensorboard
+- opencv-python
+- pillow
+- matplotlib
+- imageio
+- imageio-ffmpeg
+- moviepy
+- ftfy
+- regex
+- tqdm
+- fvcore
+- git+https://github.com/openai/CLIP.git
+- pybullet
+- gdown
+- easydict
+- ollama
+- ipython
 
 ## Configuration
 
 This use case has the following agents:
 
-- **Robot** (agent_0): human inputs (policy: SayCan)
+- **Robot** (saycan_agent_0): human inputs (policy: SayCan)
 
 See `config.yaml` for full configuration details.
