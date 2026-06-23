@@ -6,7 +6,7 @@ This is a classic experiment by Knox & Stone in which an agent is trained with e
 
 From the gallery root:
 ```bash
-python install.py mountain_tamer
+sharpie-install mountain_tamer --gallery-dir .
 ```
 
 ## Dependencies
@@ -17,7 +17,7 @@ python install.py mountain_tamer
 
 This use case has the following agents:
 
-- **Mountain car TAMER agent** (agent_mct): human inputs (policy: Mountain car TAMER)
+- **Mountain car TAMER agent** (mountain_tamer_agent): human inputs (policy: Mountain car TAMER)
   - Keyboard controls:
     - ↑ (Good)
     - ↓ (Bad)

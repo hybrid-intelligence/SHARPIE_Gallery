@@ -8,14 +8,14 @@ environment:
   name: Amaze
   description: A lightweight maze navigation task generator for sighted AI agents
   filepaths:
-    environment: amaze/environment.py
+    environment: environment.py
 
 policy:
   name: Amaze
   description: TAMER policy for Amaze
   filepaths:
-    policy: amaze/policy.py
-    tamer: amaze/tamer.py
+    policy: policy.py
+    tamer: tamer.py
   checkpoint_interval: 1
 
 agents:

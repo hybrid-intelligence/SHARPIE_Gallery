@@ -6,7 +6,7 @@ environment:
   name: Mountain car
   description: "Classic control task: drive a car up a mountain using momentum."
   filepaths:
-    environment: mountain/environment.py
+    environment: environment.py
 
 agents:
   - role: mountain_agent_1

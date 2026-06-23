@@ -6,7 +6,7 @@ Simple spread experiment. Each agent should cover one target.
 
 From the gallery root:
 ```bash
-python install.py spread
+sharpie-install spread --gallery-dir .
 ```
 
 ## Dependencies

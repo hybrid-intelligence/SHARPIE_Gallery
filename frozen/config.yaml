@@ -7,14 +7,14 @@ environment:
   name: Frozen lake
   description: "Navigate across a frozen lake grid while avoiding falling into holes."
   filepaths:
-    environment: frozen/environment.py
+    environment: environment.py
 
 policy:
   name: Frozen
   description: ""
   filepaths:
-    policy: frozen/policy.py
-    tamer: frozen/tamer.py
+    policy: policy.py
+    tamer: tamer.py
   checkpoint_interval: 1
 
 agents:
