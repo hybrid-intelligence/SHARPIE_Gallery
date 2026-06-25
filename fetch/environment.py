@@ -8,6 +8,7 @@ from mujoco import mj_forward, mj_step, mj_resetData, mjtCamera, Renderer
 
 from aapets.common.robot_storage import RerunnableRobot
 from aapets.common.mujoco.state import MjState
+from aapets.common.mujoco.callback import MjcbCallbacks
 from aapets.zoo.evolve import Arguments as ZooArguments
 
 from aapets.fetch.types import Config as Arguments
@@ -62,13 +63,19 @@ class EnvironmentWrapper:
         #         self.viewer.cam.fixedcamid = self.model.camera(self.args.camera).id
         #         self.viewer.cam.type = mjtCamera.mjCAMERA_FIXED
 
-
         self.brain = FetcherCPG(
             self.record.brain[-1], **self.record.brain[1],
             state=self.state, name=robot)
 
         self.dynamics = self.dynamics_class(
-            self.state, overlay=None, robot=robot, ball="ball", human="None", brain=self.brain)
+            self.state,
+            overlay=None,
+            robot=robot, ball="ball", human="None",
+            brain=self.brain,
+        )
+        self.callbacks = MjcbCallbacks(
+            self.state, [self.brain], dict(dynamics=self.dynamics), self.args)
+        self.callbacks.start()
 
     def reset(self):
         """
@@ -78,9 +85,11 @@ class EnvironmentWrapper:
             observation: Initial observation (numpy array)
             info: Additional information
         """
+        self.callbacks.stop()
         mujoco.mj_resetData(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
         self.brain.reset(self.state)
+        self.callbacks.start()
         return self._observation(), self._infos()
 
     def step(self, action_dict):
@@ -97,7 +106,7 @@ class EnvironmentWrapper:
             truncated: Whether the episode was truncated (bool)
             info: Additional information (dict)
         """
-        # print(action_dict)
+        self.dynamics.process_keys(self.state, list(action_dict.values())[0])
         mujoco.mj_step(self.model, self.data, nstep=self.sub_steps)
         return self._observation(), 0, False, False, self._infos()
 
@@ -112,9 +121,9 @@ class EnvironmentWrapper:
         frame = self.viewer.render()
 
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        label = f"t = {self.data.time:.3f} s"
+        label = f"t = {self.data.time:.3g} s"
         cv2.putText(frame, label, (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 2)
         return frame
 
     def _observation(self): return np.array([])

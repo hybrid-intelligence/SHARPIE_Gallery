@@ -17,10 +17,10 @@ agents:
     policy: null
     participant: true
     keyboard_inputs:
-      ArrowRight: 1
-      ArrowUp: 2
-      ArrowLeft: 3
-      ArrowDown: 4
+      ArrowLeft: 263
+      ArrowRight: 262
+      ArrowUp: 265
+      ArrowDown: 264
       default: 0
     keyboard_input_display:
       ArrowLeft:
