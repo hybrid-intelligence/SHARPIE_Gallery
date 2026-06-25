@@ -1,0 +1,20 @@
+Based on hello world
+
+- Start server?
+> sharpie-web runserver
+
+- Best practices?
+> sharpie-install fetch (every time)
+OR
+> sharpie-install fetch --check (every time)
+> sharpie-install fetch (at the end)
+
+Actually most of the docs are obsolete with sharpie-install
+
+Make the connection key with sharpie-install?
+
+Quickstart talks about the key. Hello world does not :(
+
+No default consent
+
+Filenames in config yaml are local to experiment folder. No warnings beforehand though
