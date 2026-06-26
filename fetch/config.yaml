@@ -1,7 +1,7 @@
 use_case: fetch
 dependencies:
-  # - apets-ariel[fetch] @ git+https://github.com/kgd-al/apets-ariel
-  - -e apets-ariel[fetch] @ file:///home/kgd/work/code/vu/apets-ariel
+  - apets-ariel[fetch] @ git+https://github.com/kgd-al/apets-ariel
+  # - -e apets-ariel[fetch] @ file:///home/kgd/work/code/vu/apets-ariel
   - git+https://github.com/kgd-al/ariel
 
 environment:
