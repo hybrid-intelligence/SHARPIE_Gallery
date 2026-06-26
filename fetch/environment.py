@@ -28,8 +28,9 @@ class EnvironmentWrapper:
 
     def __init__(self):
         self.args = Arguments()
-        self.args.pretty_print()
+        self.args.duration = np.inf
         self.args.robot_archive = Path(__file__).parent.joinpath("spider.zip")
+        self.args.pretty_print()
         self.record = RerunnableRobot.load(self.args.robot_archive)
 
         self.dynamics_class = DemoBallDynamics
@@ -106,7 +107,12 @@ class EnvironmentWrapper:
             truncated: Whether the episode was truncated (bool)
             info: Additional information (dict)
         """
-        self.dynamics.process_keys(self.state, list(action_dict.values())[0])
+        actions = list(action_dict.values())[0]
+        try:
+            actions.remove(0)  # Ignore default action
+        except:
+            pass
+        self.dynamics.set_keys(actions)
         mujoco.mj_step(self.model, self.data, nstep=self.sub_steps)
         return self._observation(), 0, False, False, self._infos()
 

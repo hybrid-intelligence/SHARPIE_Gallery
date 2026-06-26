@@ -47,5 +47,5 @@ experiment:
     Control stuff in the fetch task
   enabled: true
   number_of_episodes: 1
-  target_fps: 24.0
+  target_fps: 25.0
   wait_for_inputs: false
