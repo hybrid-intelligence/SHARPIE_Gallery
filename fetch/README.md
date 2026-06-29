@@ -1,6 +1,9 @@
-# Mountain car
+# Fetch
 
-Control a car to climb a mountain using momentum. Use the left and right arrow keys to accelerate the car and build up enough momentum to reach the goal at the top of the hill.
+Modular evolutionary robotics interaction either by:
+- Controlling a robot directly
+- Controlling the ball a robot tries to chase
+- Throwing the ball and
 
 
 ## Installation

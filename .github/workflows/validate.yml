@@ -1,6 +1,6 @@
 name: Validate Use Cases
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   matrix_prep:
