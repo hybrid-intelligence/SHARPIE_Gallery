@@ -1,10 +1,11 @@
+import os
+os.environ["MUJOCO_GL"] = "egl"
+
 import cv2
 import mujoco
 import numpy as np
 
 from pathlib import Path
-
-from mujoco import mj_forward, mj_step, mj_resetData, mjtCamera, Renderer
 
 from aapets.common.robot_storage import RerunnableRobot
 from aapets.common.mujoco.state import MjState
