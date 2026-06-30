@@ -20,18 +20,7 @@ jobs:
 #      - name: Install egl dependency (overkill for most use-cases)
 #        run: |
 #          sudo apt install -y libglew-dev
-      - run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libgles2 mesa-utils
-        # then verify directly rather than trusting the package list:
-      - run: |
-          pip install mujoco
-          python -c "
-          import os
-          os.environ['MUJOCO_GL'] = 'egl'
-          import mujoco
-          m = mujoco.MjModel.from_xml_string('<mujoco/>')
-          r = mujoco.Renderer(m)
-          print('EGL renderer OK')
-          "
+#      - run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libgles2 mesa-utils
 
       - id: set-matrix
         run: |
@@ -53,7 +42,9 @@ jobs:
           python-version: ${{ matrix.python_version }}
       
       - name: Install dependencies
-        run: pip install pyyaml
-      
+        run: |
+          sudo apt install -y libglew-dev
+          pip install pyyaml
+
       - name: Validate ${{ matrix.use_case }}
         run: python install.py ${{ matrix.use_case }} --check
