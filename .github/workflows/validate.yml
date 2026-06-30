@@ -17,10 +17,20 @@ jobs:
       - name: Install PyYAML
         run: pip install pyyaml
 
-      - name: Install egl dependency (overkill for most use-cases)
-        run: |
-          sudo apt install -y libglfw3 libglew2.2 libglx-mesa0 libosmesa6 \ 
-                              libegl-dev libglvnd0 libglx0 libgles2 
+#      - name: Install egl dependency (overkill for most use-cases)
+#        run: |
+#          sudo apt install -y libglew-dev
+      - run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libgles2 mesa-utils
+        # then verify directly rather than trusting the package list:
+      - run: |
+          python -c "
+          import os
+          os.environ['MUJOCO_GL'] = 'egl'
+          import mujoco
+          m = mujoco.MjModel.from_xml_string('<mujoco/>')
+          r = mujoco.Renderer(m)
+          print('EGL renderer OK')
+          "
 
       - id: set-matrix
         run: |
