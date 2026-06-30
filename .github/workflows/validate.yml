@@ -40,11 +40,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
-      
+
+      - name: Install egl dependencies
+        if: ${{ matrix.use_case == 'fetch' }}
+        run: sudo apt install -y libglew-dev
+
       - name: Install dependencies
-        run: |
-          sudo apt install -y libglew-dev
-          pip install pyyaml
+        run: pip install pyyaml
 
       - name: Validate ${{ matrix.use_case }}
         run: python install.py ${{ matrix.use_case }} --check
