@@ -23,6 +23,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libgles2 mesa-utils
         # then verify directly rather than trusting the package list:
       - run: |
+          pip install mujoco
           python -c "
           import os
           os.environ['MUJOCO_GL'] = 'egl'
