@@ -12,7 +12,7 @@ python install.py fetch
 
 ### ⚠️ Important
 
-Requires egl back-end library. Install with `sudo apt install libglfw3 libglew2.0 libglx-mesa0 libosmesa6 libegl-dev libglvnd0 libglx0 libgles2`
+Requires egl back-end library. Install with `sudo apt install libglew-dev`
 
 ## Dependencies
 

@@ -5,8 +5,7 @@ dependencies:
 #   - -e apets-ariel[fetch] @ file:///home/kgd/work/code/vu/apets-ariel
 #   - -e ariel @ file:///home/kgd/work/code/vu/ariel
 installation_notes: "Requires egl back-end library. 
-  Install with `sudo apt install libglfw3 libglew2.2 libglx-mesa0 libosmesa6 
-  libegl-dev libglvnd0 libglx0 libgles2`"
+  Install with `sudo apt install libglew-dev`"
 
 environment:
   name: ARIEL - Fetch
