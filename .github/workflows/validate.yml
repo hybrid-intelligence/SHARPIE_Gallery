@@ -19,7 +19,7 @@ jobs:
 
       - name: Install egl dependency (overkill for most use-cases)
         run: |
-          sudo apt install -y libglfw3 libglew2.0 libglx-mesa0 libosmesa6 \ 
+          sudo apt install -y libglfw3 libglew2.2 libglx-mesa0 libosmesa6 \ 
                               libegl-dev libglvnd0 libglx0 libgles2 
 
       - id: set-matrix
