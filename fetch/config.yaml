@@ -4,6 +4,7 @@ dependencies:
   - git+https://github.com/kgd-al/ariel
 #   - -e apets-ariel[fetch] @ file:///home/kgd/work/code/vu/apets-ariel
 #   - -e ariel @ file:///home/kgd/work/code/vu/ariel
+installation_notes: "Requires egl back-end library. Install with `sudo apt install libegl-devel`"
 
 environment:
   name: ARIEL - Fetch

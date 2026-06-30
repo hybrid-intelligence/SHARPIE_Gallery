@@ -18,7 +18,7 @@ python install.py frozen
 
 This use case has the following agents:
 
-- **Frozen agent** (agent): human inputs (policy: Frozen)
+- **Frozen agent** (frozen_agent): human inputs (policy: Frozen)
   - Keyboard controls:
     - ↑ (Good)
     - ↓ (Bad)

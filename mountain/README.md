@@ -12,13 +12,13 @@ python install.py mountain
 
 ## Dependencies
 
-- gymnasium
+- gymnasium[classic_control]
 
 ## Configuration
 
 This use case has the following agents:
 
-- **Car** (agent_1): human inputs
+- **Car** (mountain_agent_1): human inputs
   - Keyboard controls:
     - ← (Left)
     - → (Right)

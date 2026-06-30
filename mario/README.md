@@ -27,7 +27,7 @@ Requires Python >= 3.13
 
 This use case has the following agents:
 
-- **Mario** (agent_1): human inputs (policy: MarioExpertPolicy)
+- **Mario** (mario_agent_1): human inputs (policy: MarioExpertPolicy)
   - Keyboard controls:
     - ← (Left)
     - → (Right)

@@ -22,3 +22,5 @@ Quickstart talks about the key. Hello world does not :(
 No default consent
 
 Filenames in config yaml are local to experiment folder. No warnings beforehand though
+
+What can I store? What if I want to log the robot position + user actions?

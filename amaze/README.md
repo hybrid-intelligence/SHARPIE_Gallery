@@ -19,7 +19,7 @@ python install.py amaze
 
 This use case has the following agents:
 
-- **Agent** (agent_0): human inputs (policy: Amaze)
+- **Amaze agent** (amaze_agent_0): human inputs (policy: Amaze)
   - Keyboard controls:
     - ↑ (Good)
     - ↓ (Bad)

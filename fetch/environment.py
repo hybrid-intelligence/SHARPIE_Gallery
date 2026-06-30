@@ -74,6 +74,7 @@ class EnvironmentWrapper:
             overlay=None,
             robot=robot, ball="ball", human="None",
             brain=self.brain,
+            config = self.args,
         )
         self.callbacks = MjcbCallbacks(
             self.state, [self.brain], dict(dynamics=self.dynamics), self.args)

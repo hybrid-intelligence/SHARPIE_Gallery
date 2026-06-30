@@ -21,8 +21,8 @@ Requires Python >= 3.10, < 3.11
 
 This use case has the following agents:
 
-- **Agent** (Agent): AI inputs (policy: OvercookedRandom)
-- **Human** (Human): human inputs
+- **Agent** (overcooked_agent): AI inputs (policy: OvercookedRandom)
+- **Human** (overcooked_human): human inputs
   - Keyboard controls:
     - ↑ (Up)
     - ↓ (Down)

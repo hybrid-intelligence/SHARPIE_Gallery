@@ -16,7 +16,11 @@ jobs:
       
       - name: Install PyYAML
         run: pip install pyyaml
-      
+
+      - name: Install egl dependency (overkill for most use-cases)
+        run: |
+          sudo apt install -y libegl-dev
+
       - id: set-matrix
         run: |
           MATRIX=$(python get_python_versions.py)

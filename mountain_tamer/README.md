@@ -17,7 +17,7 @@ python install.py mountain_tamer
 
 This use case has the following agents:
 
-- **Mountain car TAMER agent** (agent_mct): human inputs (policy: Mountain car TAMER)
+- **Mountain car TAMER agent** (mountain_tamer_agent): human inputs (policy: Mountain car TAMER)
   - Keyboard controls:
     - ↑ (Good)
     - ↓ (Bad)
