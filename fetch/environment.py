@@ -30,6 +30,7 @@ class EnvironmentWrapper:
     def __init__(self):
         self.args = Arguments()
         self.args.duration = np.inf
+        self.args.ball_strength = 25
         self.args.robot_archive = Path(__file__).parent.joinpath("spider.zip")
         self.args.pretty_print()
         self.record = RerunnableRobot.load(self.args.robot_archive)
@@ -74,7 +75,7 @@ class EnvironmentWrapper:
             overlay=None,
             robot=robot, ball="ball", human="None",
             brain=self.brain,
-            config = self.args,
+            config=self.args,
         )
         self.callbacks = MjcbCallbacks(
             self.state, [self.brain], dict(dynamics=self.dynamics), self.args)
