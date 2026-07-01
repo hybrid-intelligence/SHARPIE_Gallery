@@ -6,7 +6,7 @@ Serve as many orders as possible with an AI teammate
 
 From the gallery root:
 ```bash
-python install.py overcooked
+sharpie-install overcooked --gallery-dir .
 ```
 
 ### ⚠️ Important

@@ -19,7 +19,7 @@ def generate_readme(config: dict) -> str:
         "",
         "From the gallery root:",
         "```bash",
-        f"python install.py {uc}",
+        f"sharpie-install {uc} --gallery-dir .",
         "```",
         "",
     ]

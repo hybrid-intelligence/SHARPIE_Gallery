@@ -6,7 +6,7 @@ Simple tag experiment, this requires 2 simultaneous users. The adversary needs t
 
 From the gallery root:
 ```bash
-python install.py tag
+sharpie-install tag --gallery-dir .
 ```
 
 ## Dependencies

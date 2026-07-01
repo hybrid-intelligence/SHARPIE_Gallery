@@ -6,7 +6,7 @@ environment:
   name: Simple tag
   description: "A predator-prey pursuit game where an adversary chases a fleeing agent."
   filepaths:
-    environment: tag/environment.py
+    environment: environment.py
 
 agents:
   - role: agent_0

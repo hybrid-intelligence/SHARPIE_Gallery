@@ -6,7 +6,7 @@ Navigate a frozen lake grid using keyboard feedback to train a TAMER agent.
 
 From the gallery root:
 ```bash
-python install.py frozen
+sharpie-install frozen --gallery-dir .
 ```
 
 ## Dependencies

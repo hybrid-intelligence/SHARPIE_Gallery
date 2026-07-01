@@ -10,7 +10,7 @@ You can give instructions like:
 
 From the gallery root:
 ```bash
-python install.py saycan
+sharpie-install saycan --gallery-dir .
 ```
 
 ### ⚠️ Important

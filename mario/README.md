@@ -6,7 +6,7 @@ Train an expert policy for Super Mario Bros through behavior cloning from human 
 
 From the gallery root:
 ```bash
-python install.py mario
+sharpie-install mario --gallery-dir .
 ```
 
 ### ⚠️ Important

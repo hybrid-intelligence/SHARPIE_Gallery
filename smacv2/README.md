@@ -14,7 +14,7 @@ Features randomized unit compositions (Marines, Marauders, Medivacs) and start p
 
 From the gallery root:
 ```bash
-python install.py smacv2
+sharpie-install smacv2 --gallery-dir .
 ```
 
 ### ⚠️ Important

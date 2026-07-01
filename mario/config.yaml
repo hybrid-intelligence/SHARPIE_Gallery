@@ -14,14 +14,14 @@ environment:
   name: Mario
   description: Gym Super Mario Bros environment for behavior cloning
   filepaths:
-    environment: mario/environment.py
+    environment: environment.py
 
 policy:
   name: MarioExpertPolicy
   description: Human expert policy trained via behavior cloning
   filepaths:
-    policy: mario/policy.py
-    human_expert: mario/human_expert.py
+    policy: policy.py
+    human_expert: human_expert.py
   checkpoint_interval: 1
 
 agents:

@@ -6,7 +6,7 @@ A lightweight maze navigation task generator for sighted AI agents.
 
 From the gallery root:
 ```bash
-python install.py amaze
+sharpie-install amaze --gallery-dir .
 ```
 
 ## Dependencies

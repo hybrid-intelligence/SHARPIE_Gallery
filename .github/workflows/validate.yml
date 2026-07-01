@@ -40,8 +40,8 @@ jobs:
         if: ${{ matrix.use_case == 'fetch' }}
         run: sudo apt install -y libglew-dev
 
-      - name: Install dependencies
-        run: pip install pyyaml
+      - name: Install SHARPIE
+        run: pip install sharpie
 
       - name: Validate ${{ matrix.use_case }}
-        run: python install.py ${{ matrix.use_case }} --check
+        run: sharpie-install ${{ matrix.use_case }} --check --gallery-dir .

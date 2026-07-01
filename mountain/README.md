@@ -7,7 +7,7 @@ Control a car to climb a mountain using momentum. Use the left and right arrow k
 
 From the gallery root:
 ```bash
-python install.py mountain
+sharpie-install mountain --gallery-dir .
 ```
 
 ## Dependencies
