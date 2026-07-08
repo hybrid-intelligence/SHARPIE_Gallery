@@ -1,6 +1,6 @@
 name: Validate Use Cases
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   matrix_prep:
@@ -16,7 +16,7 @@ jobs:
       
       - name: Install PyYAML
         run: pip install pyyaml
-      
+
       - id: set-matrix
         run: |
           MATRIX=$(python get_python_versions.py)
@@ -35,9 +35,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python_version }}
-      
+
+      - name: Install egl dependencies
+        if: ${{ matrix.use_case == 'fetch' }}
+        run: sudo apt install -y libglew-dev
+
       - name: Install SHARPIE
         run: pip install sharpie
-      
+
       - name: Validate ${{ matrix.use_case }}
         run: sharpie-install ${{ matrix.use_case }} --check --gallery-dir .

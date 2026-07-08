@@ -1,0 +1,54 @@
+use_case: fetch
+dependencies:
+ - apets-ariel[fetch] @ git+https://github.com/kgd-al/apets-ariel
+ - git+https://github.com/kgd-al/ariel
+# - -e apets-ariel[fetch] @ file:///home/kgd/work/code/vu/apets-ariel
+# - -e ariel @ file:///home/kgd/work/code/vu/ariel
+installation_notes: "Requires egl back-end library. 
+  Install with `sudo apt install libglew-dev`"
+
+environment:
+  name: ARIEL - Fetch
+  description: "Play with an artificial pet"
+  filepaths:
+    environment: environment.py
+
+agents:
+  - role: fetch_agent
+    name: Ball
+    description: "Control the ball by pushing on it"
+    policy: null
+    participant: true
+    keyboard_inputs:
+      ArrowLeft: 263
+      ArrowRight: 262
+      ArrowUp: 265
+      ArrowDown: 264
+      default: 0
+    keyboard_input_display:
+      ArrowLeft:
+        symbol: "\u2190"
+        label: Left
+      ArrowUp:
+        symbol: "\u2191"
+        label: Up
+      ArrowRight:
+        symbol: "\u2192"
+        label: Right
+      ArrowDown:
+        symbol: "\u2193"
+        label: Down
+    multiple_keyboard_inputs: true
+    inputs_type: actions
+    textual_inputs: false
+
+experiment:
+  link: fetch
+  name: Fetch
+  short_description: Testing fetch task
+  long_description: |
+    Interact with a robotic agent trying to catch a ball. You can move the ball around with keyboard inputs
+  enabled: true
+  number_of_episodes: 1
+  target_fps: 25.0
+  wait_for_inputs: false
