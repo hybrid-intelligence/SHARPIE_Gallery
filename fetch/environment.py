@@ -54,17 +54,6 @@ class EnvironmentWrapper:
         self.sub_steps = int(1 / (self.model.opt.timestep * self.fps))
 
         self.viewer = mujoco.Renderer(self.model, width=480, height=480)
-        # match self.args.camera:
-        #     case None:
-        #         pass
-        #
-        #     case "tracking":
-        #         self.viewer.cam.type = mjtCamera.mjCAMERA_TRACKING
-        #         self.viewer.cam.trackbodyid = self.model.body(robot).id
-        #
-        #     case _:
-        #         self.viewer.cam.fixedcamid = self.model.camera(self.args.camera).id
-        #         self.viewer.cam.type = mjtCamera.mjCAMERA_FIXED
 
         self.brain = FetcherCPG(
             self.record.brain[-1], **self.record.brain[1],

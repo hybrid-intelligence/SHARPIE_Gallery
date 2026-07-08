@@ -15,8 +15,8 @@ environment:
 
 agents:
   - role: fetch_agent
-    name: Fetcher
-    description: ""
+    name: Ball
+    description: "Control the ball by pushing on it"
     policy: null
     participant: true
     keyboard_inputs:
@@ -47,7 +47,7 @@ experiment:
   name: Fetch
   short_description: Testing fetch task
   long_description: |
-    Control stuff in the fetch task
+    Interact with a robotic agent trying to catch a ball. You can move the ball around with keyboard inputs
   enabled: true
   number_of_episodes: 1
   target_fps: 25.0

@@ -1,13 +1,13 @@
 # Fetch
 
-Control stuff in the fetch task
+Interact with a robotic agent trying to catch a ball. You can move the ball around with keyboard inputs
 
 
 ## Installation
 
 From the gallery root:
 ```bash
-python install.py fetch
+sharpie-install fetch --gallery-dir .
 ```
 
 ### ⚠️ Important
@@ -23,7 +23,7 @@ Requires egl back-end library. Install with `sudo apt install libglew-dev`
 
 This use case has the following agents:
 
-- **Fetcher** (fetch_agent): human inputs
+- **Ball** (fetch_agent): human inputs
   - Keyboard controls:
     - ← (Left)
     - ↑ (Up)
